@@ -1,0 +1,13 @@
+<html>
+<head>
+  <script src='cMath.js'></script>
+</head>
+<body>
+  <h1>WASM Example</h1>
+  <script src='test.js'></script>
+</body>
+</html>
+
+<!--Build math.c using 
+
+emcc math.c -Os -s WASM=1 -s SIDE_MODULE=1 -o math.wasm-->
