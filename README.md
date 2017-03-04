@@ -9,16 +9,17 @@ Then open test.html in your browser (Chrome Canary or Firefox Developer Edition)
 What is WebAssembly?
 ====================
 Features --
-Compact: minimize over-the-wire size i.e. download less code
-Portable: runs the same on all browsers
-Fast: faster to decode binary than parse JS
-Safe: same security profile as JS, does not have access to random bits of memory
++ Compact: minimize over-the-wire size i.e. download less code
++ Portable: runs the same on all browsers
++ Fast: faster to decode binary than parse JS
++ Safe: same security profile as JS, does not have access to random bits of memory
 
 What do we do with it?
-*Compile to it -- it's a compiler target for the web
-*Use it in Javascript -- efficiently load lots of code with predictable near-native performance. Build a library with it!
-*It's a virtual CPU
-*ASM.JS all grown up, a binary encoding with some optimizations to make it a better compiler target
+======================
+* Compile to it -- it's a compiler target for the web
+* Use it in Javascript -- efficiently load lots of code with predictable near-native performance. Build a library with it!
+* It's a virtual CPU
+* ASM.JS all grown up, a binary encoding with some optimizations to make it a better compiler target
 
 asm.js         -> WebAssembly
 (x+y)|0        -> i32.add // single op-code
