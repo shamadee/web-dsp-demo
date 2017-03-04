@@ -97,6 +97,7 @@ the web -- think of it as a VM
 
 Emscripten maps common C/C++ interfaces to Web APIs
 For example, using libc and SDL:
+```
 #include <SDL/SDL.h>
 #include <stdio.h>
 
@@ -108,17 +109,21 @@ int main(int argc, char ** argv) {
   printf("Done!\n");
   return 0;
 }
+```
 
 Compiled by Emscripten:
+```
 emcc -O2 test.c -o test.html
+```
 
-Compile JS to WASM?
+Should we compile JS to WASM?
+=============================
 *NO -- JS WILL RUN BEST AS JS BY THE JS ENGINE*
 
 How will WebAssembly be used?
-*Implicity through JS frameworks
--Katz Ember talk
-*WebAssembly libraries
+* Implicity through JS frameworks
+: Katz Ember talk
+* WebAssembly libraries
 -ammo.js, sql.js, asmCrypto.js, cld, BA3
 *Whole WebAssembly engine + JS frontend
 -MathStudio, Adobe Lightroom
@@ -131,11 +136,12 @@ Need a scripting language for your native app? Maybe pick JS
 webassembly.github.io
 Binaryen -- compiles C/C++ -> asm.js -> WebAssembly
 
-What does emscripten have support for already?
--Common stuff, for the most part
--SDL
--OpenGL
--OpenAL
+What does emscripten support?
+=============================
++ Common stuff, for the most part
++ SDL
++ OpenGL
++ OpenAL
 
 TODOS:
 
