@@ -20,10 +20,12 @@ What do we do with it?
 * It's a virtual CPU
 * ASM.JS all grown up, a binary encoding with some optimizations to make it a better compiler target
 
-asm.js         -> WebAssembly <br>
-(x+y)|0        -> i32.add // single op-code <br>
-f()|0          -> call <br>
-HEAP32[i>>2]|0 ~> i32.load <br>
+```
+asm.js         -> WebAssembly
+(x+y)|0        -> i32.add // single op-code
+f()|0          -> call
+HEAP32[i>>2]|0 ~> i32.load
+```
 
 *In JS we simulate the heap with a typed array of bytes*
 -Allows for pointer arithmatic and is fast to compile
