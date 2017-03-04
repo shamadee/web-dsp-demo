@@ -1,11 +1,11 @@
 loadWASM()
   .then(cMath => {
-    console.log('FIB: ');
-    const val = 20;
+    console.log('\n\nFib:');
+    const val = 36;
     const t0 = performance.now();
     cMath.fib(val);
     const t1 = performance.now();
-    console.log(`wasm took ${t1 - t0}ms to compute`);
+    console.log(`wasm took ${t1 - t0} ms to compute`);
 
     function fibJS(a) {
       if (a == 0 || a == 1) return a;
@@ -14,19 +14,23 @@ loadWASM()
     const t2 = performance.now();
     fibJS(val);
     const t3 = performance.now();
-    console.log(`js took ${t3 - t2}ms to compute`);
+    console.log(`js took ${t3 - t2} ms to compute`);
 
-    console.log('\n\nArray manipulation');
-    const len = 10000000;
-    const data = [...Array(len).keys()];
+    console.log('\n\nArray manipulation:');
+    const len = 10;
+    let data = [...Array(len).keys()];
+    data = data.map(el => el * 1.1);
+    console.log('before: ', data);
     
     const t4 = performance.now();
-    var mem = _malloc(len);
-    HEAPU8.set(data, mem);
-    cMath.manipArr(mem, len);
-    var result = HEAPU8.subarray(mem, mem + len);
+    var mem = _malloc(len); // allocate shared memory
+    console.log("!");
+    HEAPU8.set(data, mem); // write data into shared memory
+    var result = HEAPU8.subarray(mem, mem + (len)); // read data from shared memory
+    cMath.manipArr(mem, len); // operate on data from webassembly
+    _free(mem); // free memory
     const t5 = performance.now();
-    console.log(`wasm took ${t5 - t4}ms to compute`);
+    console.log(`wasm took ${t5 - t4} ms to compute`);
     console.log('result: ', result);
 
     const t6 = performance.now();
@@ -34,5 +38,5 @@ loadWASM()
       data[i] = data[i] * 2;
     }
     const t7 = performance.now();
-    console.log(`js took ${t7 - t6}ms to compute`);
+    console.log(`js took ${t7 - t6} ms to compute`);
   });

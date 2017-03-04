@@ -1,4 +1,5 @@
 #include <math.h>
+#include <stdio.h>
 
 extern "C" {
   int doubler(int x) {
@@ -10,9 +11,11 @@ extern "C" {
     return fib(a - 1) + fib(a - 2);
   }
 
-  void manipArr(unsigned char * data, int len) {
+  int manipArr(char* data, int len) {
     for (int i = 0; i < len; ++i) {
-      data[i] = data[i] * 2;
+      printf("\nhello %d", data[i]);
+      data[i] = data[i] * 3.0;
     }
+    return 0;
   }
 }
