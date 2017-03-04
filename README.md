@@ -28,50 +28,60 @@ HEAP32[i>>2]|0 ~> i32.load
 ```
 
 *In JS we simulate the heap with a typed array of bytes*
--Allows for pointer arithmatic and is fast to compile
--Typed array with an integer representing the pointer. Pointers are byte indexed, arrays are int indexed, so we do some math with them (some kind of shift operation?)
++ Allows for pointer arithmatic and is fast to compile
++ Typed array with an integer representing the pointer.
++ Pointers are byte indexed, arrays are int indexed, so we do some math with them (some kind of shift operation?)
 
 Started out as Emscripten: C/C++ to JS compiler/toolchain
 asm.js optimized Emscripten output
 
 Why use asm.js?
--avoid plugins
--bring existing applications to the Web
--port high-perfomance C/C++ libraries for use by JS
--predictable near-native perfromance (compared to JS)
+===============
++ avoid plugins
++ bring existing applications to the Web
++ port high-perfomance C/C++ libraries for use by JS
++ predictable near-native perfromance (compared to JS)
 
 Why use WebAssembly?
--further reduce load time
--reduce over-the-wire size
--reduce runtime memory consumption for code
--closer to native code performance
--shared memory (coming to JS too)
+====================
++ further reduce load time
++ reduce over-the-wire size
++ reduce runtime memory consumption for code
++ closer to native code performance
++ shared memory (coming to JS too)
 
 Start with some C code:
+```
 // demo.c
 DLL_EXPORT
 int add(int lhs, int rhs) {
   return lhs + rhs;
 }
-
+```
 where functions we want to call from JS are exported:
+```
 // However DLL/DSO exports are defined in your compiler
 #define DLL_EXPORT __attribute__ ((visibility ("default")))
-
+```
 then compile to .wasm:
+```
 $ clang -mwasm demo.c -o demo.wasm
+```
 *WebAssembly back-end in progress in upstream LLVM*
 
 then view as WAST:
+```
 $ wasm2test demo.wasm | less
+// outputs the following:
 (module
   (func $add (param $lhs i32) (param $rhs i32) (result i32)
     (i32.add (get_local $lhs) (get_local $rhs))
   )
   (export "add" $add)
 )
-
+```
 then load via JS API:
+```
 fetch('demo.wasm').then(response =>
   response.arrayBuffer()
 ).then(buffer => {
@@ -79,6 +89,7 @@ fetch('demo.wasm').then(response =>
   let instance = Wasm.instantiateModule(codeBytes);
   let three = instance.exports.add(1, 2); // three = 3
 })
+```
 
 WebAssembly types:
 local -- think of it as a register
