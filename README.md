@@ -7,6 +7,7 @@ emcc -o cMath.js math.c -lm -O3 -s WASM=1 -s EXPORTED_FUNCTIONS="['_fib', '_doub
 Then open test.html in your browser (Chrome Canary or Firefox Developer Edition)
 
 What is WebAssembly?
+====================
 Features --
 Compact: minimize over-the-wire size i.e. download less code
 Portable: runs the same on all browsers
