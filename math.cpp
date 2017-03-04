@@ -1,5 +1,5 @@
-#include <math.h>
-#include <stdio.h>
+// #include <math.h>
+// #include <stdio.h>
 
 extern "C" {
   int doubler(int x) {
@@ -13,7 +13,6 @@ extern "C" {
 
   int manipArr(char* data, int len) {
     for (int i = 0; i < len; ++i) {
-      printf("\nhello %d", data[i]);
       data[i] = data[i] * 3.0;
     }
     return 0;

@@ -17,14 +17,13 @@ loadWASM()
     console.log(`js took ${t3 - t2} ms to compute`);
 
     console.log('\n\nArray manipulation:');
-    const len = 10;
+    const len = 1000000;
     let data = [...Array(len).keys()];
     data = data.map(el => el * 1.1);
     console.log('before: ', data);
     
     const t4 = performance.now();
     var mem = _malloc(len); // allocate shared memory
-    console.log("!");
     HEAPU8.set(data, mem); // write data into shared memory
     var result = HEAPU8.subarray(mem, mem + (len)); // read data from shared memory
     cMath.manipArr(mem, len); // operate on data from webassembly
