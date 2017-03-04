@@ -93,8 +93,7 @@ fetch('demo.wasm').then(response =>
 
 Emscripten
 ========== 
-* Maps common C/C++ interfaces to Web APIs
-For example, using libc and SDL:
+Maps common C/C++ interfaces to Web APIs, for example, using libc and SDL:
 ```
 #include <SDL/SDL.h>
 #include <stdio.h>
