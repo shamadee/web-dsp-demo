@@ -122,7 +122,7 @@ Should we compile JS to WASM?
 
 How will WebAssembly be used?
 * Implicity through JS frameworks
-: Katz Ember talk
++ Katz Ember talk
 * WebAssembly libraries
 -ammo.js, sql.js, asmCrypto.js, cld, BA3
 *Whole WebAssembly engine + JS frontend
