@@ -1,16 +1,22 @@
-loadWebAssembly().then(cMath => {
-  const num = 50;
-  const t0 = performance.now();
-  cMath.fib(num);
-  const t1 = performance.now();
-  console.log(`WASM took ${t1 - t0} seconds`);
-  const t2 = performance.now();
-  fib(num);
-  const t3 = performance.now();
-  console.log(`JS took ${t3 - t2} seconds`);
-});
+loadWASM()
+  .then(cMath => {
+    let val = 10;
+    t0 = performance.now();
+    cMath.fib(val);
+    t1 = performance.now();
+    console.log(`wasm took ${t1 - t0}ms to compute`);
 
-function fib(num) {
-  if (num === 0 || num === 1) return num;
-  return fib(num - 1) + fib(num - 2);
-}
+    function fibJS(a) {
+      if (a == 0 || a == 1) return a;
+      return fibJS(a - 1) + fibJS(a - 2);
+    }
+    t2 = performance.now();
+    fibJS(val);
+    t3 = performance.now();
+    console.log(`js took ${t3 - t2}ms to compute`);
+    
+    // t4 = performance.now();
+    // _fib(val);
+    // t5 = performance.now();
+    // console.log(`asm took ${t5 - t4}ms to compute`);
+  });
