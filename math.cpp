@@ -19,9 +19,9 @@ extern "C" {
       int a = data[i+3];
       int brightness = (r*.21+g*.72+b*.07);
 
-      data[i] = r;
-      data[i+1] = g;
-      data[i+2] = b;
+      data[i] = brightness;
+      data[i+1] = brightness;
+      data[i+2] = brightness;
       data[i+3] = a;
     }
   }
