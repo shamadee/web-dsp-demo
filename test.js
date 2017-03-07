@@ -23,6 +23,7 @@ loadWASM()
     // }
     // const t7 = performance.now();
     // console.log(`js took ${t7 - t6} ms to compute`);
+    // window.onload = initVideo('media/vid.mp4', m, 720, 486);
     window.onload = initVideo('media/vid.mp4', m);
   });
 
@@ -37,12 +38,16 @@ function initVideo(fName, module, width=window.innerWidth, height=window.innerHe
   vid.src = fName;
   vid.autoplay = true;
   vid.loop = true;
+  
 
   vid.addEventListener("loadedmetadata", vidLoaded, false);
 }
 
 function vidLoaded() {
+  console.log('video height', vid.videoHeight);
+  console.log('video width', vid.videoWidth);
   ratio = vid.videoHeight / vid.videoWidth;
+  console.log(ratio);
   vHeight = winWidth * ratio;
   vid.width = winWidth;
   vid.height = winHeight;
@@ -64,8 +69,12 @@ function createCanvas() {
 
   canv2 = document.createElement('canvas');
 	ctx2 = canv2.getContext('2d');
-	canv2Width = Math.floor(winWidth / 4);
-	canv2Height = (winWidth / 4) * ratio;
+	// canv2Width = Math.floor(winWidth / 4);
+  canv2Width = 720;
+
+	// canv2Height = (winWidth / 4) * ratio;
+  canv2Height = 486;
+
 	canv2.width = canv2Width;
 	canv2.height = canv2Height;
 
@@ -75,7 +84,7 @@ function createCanvas() {
 function loop() {
   animation = requestAnimationFrame(() => { loop(); });
   pixels = getPixels();
-  let newPixelData = [...Array(1000).keys()];
+  // let newPixelData = [...Array(1000).keys()];
   len = pixels.data.length;
   // console.log('before: ', pixels.data);
   // console.log(m);
@@ -88,12 +97,14 @@ function loop() {
   // console.log('after: ', pixels.data);
   _free(mem); // free memory
   ctx2.putImageData(pixels, 0, 0);
-  ctx.drawImage(canv2, 0, 0, winWidth, vHeight);
+  // ctx.drawImage(canv2, 0, 0, winWidth, vHeight);
+  ctx.drawImage(canv2, 0, 0, 720, 486);
+
   draw();
 }
 
 function draw() {
-  ctx.drawImage(canv2, 0, 0, winWidth, winHeight);
+  ctx.drawImage(canv2, 0, 0, 720, 486);
 }
 
 function getPixels() {
