@@ -5,7 +5,8 @@
   "main": "test.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "gulp",
+    "cpp": "echo \"compiling C/C++ to WASM\" && . ./compileWASM.sh"
   },
   "repository": {
     "type": "git",
@@ -20,5 +21,10 @@
   "dependencies": {
     "express": "^4.15.0",
     "path": "^0.12.7"
+  },
+  "devDependencies": {
+    "browser-sync": "^2.18.8",
+    "gulp": "^3.9.1",
+    "gulp-livereload": "^3.8.1"
   }
 }

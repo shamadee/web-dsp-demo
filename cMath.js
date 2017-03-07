@@ -236,12 +236,8 @@ var Runtime = {
  }),
  dynCall: (function(sig, ptr, args) {
   if (args && args.length) {
-   assert(args.length == sig.length - 1);
-   assert("dynCall_" + sig in Module, "bad function pointer type - no table for sig '" + sig + "'");
    return Module["dynCall_" + sig].apply(null, [ ptr ].concat(args));
   } else {
-   assert(sig.length == 1);
-   assert("dynCall_" + sig in Module, "bad function pointer type - no table for sig '" + sig + "'");
    return Module["dynCall_" + sig].call(null, ptr);
   }
  }),
@@ -296,17 +292,15 @@ var Runtime = {
   var ret = STACKTOP;
   STACKTOP = STACKTOP + size | 0;
   STACKTOP = STACKTOP + 15 & -16;
-  assert((STACKTOP | 0) < (STACK_MAX | 0) | 0) | 0;
   return ret;
  }),
  staticAlloc: (function(size) {
   var ret = STATICTOP;
-  STATICTOP = STATICTOP + (assert(!staticSealed), size) | 0;
+  STATICTOP = STATICTOP + size | 0;
   STATICTOP = STATICTOP + 15 & -16;
   return ret;
  }),
  dynamicAlloc: (function(size) {
-  assert(DYNAMICTOP_PTR);
   var ret = HEAP32[DYNAMICTOP_PTR >> 2];
   var end = (ret + size + 15 | 0) & -16;
   HEAP32[DYNAMICTOP_PTR >> 2] = end;
@@ -381,7 +375,6 @@ var cwrap, ccall;
   var func = getCFunc(ident);
   var cArgs = [];
   var stack = 0;
-  assert(returnType !== "array", 'Return type should not be "array".');
   if (args) {
    for (var i = 0; i < args.length; i++) {
     var converter = toC[argTypes[i]];
@@ -394,10 +387,6 @@ var cwrap, ccall;
    }
   }
   var ret = func.apply(null, cArgs);
-  if ((!opts || !opts.async) && typeof EmterpreterAsync === "object") {
-   assert(!EmterpreterAsync.state, "cannot start async op with normal JS calling ccall");
-  }
-  if (opts && opts.async) assert(!returnType, "async ccalls cannot return values");
   if (returnType === "string") ret = Pointer_stringify(ret);
   if (stack !== 0) {
    if (opts && opts.async) {
@@ -467,7 +456,6 @@ var cwrap, ccall;
    })).returnValue;
    funcstr += "ret = " + strgfy + "(ret);";
   }
-  funcstr += "if (typeof EmterpreterAsync === 'object') { assert(!EmterpreterAsync.state, 'cannot start async op with normal JS calling cwrap') }";
   if (!numericArgs) {
    ensureJSsource();
    funcstr += JSsource["stackRestore"].body.replace("()", "(stack)") + ";";
@@ -590,7 +578,6 @@ function allocate(slab, types, allocator, ptr) {
    i++;
    continue;
   }
-  assert(type, "Must know what type to store in allocate!");
   if (type == "i64") type = "i32";
   setValue(ret + i, curr, type);
   if (previousType !== type) {
@@ -614,7 +601,6 @@ function Pointer_stringify(ptr, length) {
  var t;
  var i = 0;
  while (1) {
-  assert(ptr + i < TOTAL_MEMORY);
   t = HEAPU8[ptr + i >> 0];
   hasUtf |= t;
   if (t == 0 && !length) break;
@@ -749,7 +735,6 @@ function stringToUTF8Array(str, outU8Array, outIdx, maxBytesToWrite) {
 }
 Module["stringToUTF8Array"] = stringToUTF8Array;
 function stringToUTF8(str, outPtr, maxBytesToWrite) {
- assert(typeof maxBytesToWrite == "number", "stringToUTF8(str, outPtr, maxBytesToWrite) is missing the third parameter that specifies the length of the output buffer!");
  return stringToUTF8Array(str, HEAPU8, outPtr, maxBytesToWrite);
 }
 Module["stringToUTF8"] = stringToUTF8;
@@ -855,20 +840,6 @@ var STACK_BASE, STACKTOP, STACK_MAX;
 var DYNAMIC_BASE, DYNAMICTOP_PTR;
 STATIC_BASE = STATICTOP = STACK_BASE = STACKTOP = STACK_MAX = DYNAMIC_BASE = DYNAMICTOP_PTR = 0;
 staticSealed = false;
-function writeStackCookie() {
- assert((STACK_MAX & 3) == 0);
- HEAPU32[(STACK_MAX >> 2) - 1] = 34821223;
- HEAPU32[(STACK_MAX >> 2) - 2] = 2310721022;
-}
-function checkStackCookie() {
- if (HEAPU32[(STACK_MAX >> 2) - 1] != 34821223 || HEAPU32[(STACK_MAX >> 2) - 2] != 2310721022) {
-  abort("Stack overflow! Stack cookie has been overwritten, expected hex dwords 0x89BACDFE and 0x02135467, but received 0x" + HEAPU32[(STACK_MAX >> 2) - 2].toString(16) + " " + HEAPU32[(STACK_MAX >> 2) - 1].toString(16));
- }
- if (HEAP32[0] !== 1668509029) throw "Runtime error: The application has corrupted its heap memory area (address zero)!";
-}
-function abortStackOverflow(allocSize) {
- abort("Stack overflow! Attempted to allocate " + allocSize + " bytes on the stack, but stack has only " + (STACK_MAX - asm.stackSave() + allocSize) + " bytes available!");
-}
 function abortOnCannotGrowMemory() {
  abort("Cannot enlarge memory arrays. Either (1) compile with  -s TOTAL_MEMORY=X  with X higher than the current value " + TOTAL_MEMORY + ", (2) compile with  -s ALLOW_MEMORY_GROWTH=1  which adjusts the size at runtime but prevents some optimizations, (3) set Module.TOTAL_MEMORY to a higher value before the program runs, or if you want malloc to return NULL (0) instead of this abort, compile with  -s ABORTING_MALLOC=0 ");
 }
@@ -878,13 +849,10 @@ function enlargeMemory() {
 var TOTAL_STACK = Module["TOTAL_STACK"] || 5242880;
 var TOTAL_MEMORY = Module["TOTAL_MEMORY"] || 16777216;
 if (TOTAL_MEMORY < TOTAL_STACK) Module.printErr("TOTAL_MEMORY should be larger than TOTAL_STACK, was " + TOTAL_MEMORY + "! (TOTAL_STACK=" + TOTAL_STACK + ")");
-assert(typeof Int32Array !== "undefined" && typeof Float64Array !== "undefined" && !!(new Int32Array(1))["subarray"] && !!(new Int32Array(1))["set"], "JS engine does not provide full typed array support");
 if (Module["buffer"]) {
  buffer = Module["buffer"];
- assert(buffer.byteLength === TOTAL_MEMORY, "provided buffer should be " + TOTAL_MEMORY + " bytes, but it is " + buffer.byteLength);
 } else {
  if (typeof WebAssembly === "object" && typeof WebAssembly.Memory === "function") {
-  assert(TOTAL_MEMORY % WASM_PAGE_SIZE === 0);
   Module["wasmMemory"] = new WebAssembly.Memory({
    initial: TOTAL_MEMORY / WASM_PAGE_SIZE,
    maximum: TOTAL_MEMORY / WASM_PAGE_SIZE
@@ -893,7 +861,6 @@ if (Module["buffer"]) {
  } else {
   buffer = new ArrayBuffer(TOTAL_MEMORY);
  }
- assert(buffer.byteLength === TOTAL_MEMORY);
 }
 updateGlobalBufferViews();
 function getTotalMemory() {
@@ -948,22 +915,18 @@ function preRun() {
  callRuntimeCallbacks(__ATPRERUN__);
 }
 function ensureInitRuntime() {
- checkStackCookie();
  if (runtimeInitialized) return;
  runtimeInitialized = true;
  callRuntimeCallbacks(__ATINIT__);
 }
 function preMain() {
- checkStackCookie();
  callRuntimeCallbacks(__ATMAIN__);
 }
 function exitRuntime() {
- checkStackCookie();
  callRuntimeCallbacks(__ATEXIT__);
  runtimeExited = true;
 }
 function postRun() {
- checkStackCookie();
  if (Module["postRun"]) {
   if (typeof Module["postRun"] == "function") Module["postRun"] = [ Module["postRun"] ];
   while (Module["postRun"].length) {
@@ -1005,7 +968,6 @@ function intArrayToString(array) {
  for (var i = 0; i < array.length; i++) {
   var chr = array[i];
   if (chr > 255) {
-   assert(false, "Character code " + chr + " (" + String.fromCharCode(chr) + ")  at offset " + i + " not in 0x00-0xFF.");
    chr &= 255;
   }
   ret.push(String.fromCharCode(chr));
@@ -1025,13 +987,11 @@ function writeStringToMemory(string, buffer, dontAddNull) {
 }
 Module["writeStringToMemory"] = writeStringToMemory;
 function writeArrayToMemory(array, buffer) {
- assert(array.length >= 0, "writeArrayToMemory array must have a length (should be an array or typed array)");
  HEAP8.set(array, buffer);
 }
 Module["writeArrayToMemory"] = writeArrayToMemory;
 function writeAsciiToMemory(str, buffer, dontAddNull) {
  for (var i = 0; i < str.length; ++i) {
-  assert(str.charCodeAt(i) === str.charCodeAt(i) & 255);
   HEAP8[buffer++ >> 0] = str.charCodeAt(i);
  }
  if (!dontAddNull) HEAP8[buffer >> 0] = 0;
@@ -1088,37 +1048,10 @@ var Math_trunc = Math.trunc;
 var runDependencies = 0;
 var runDependencyWatcher = null;
 var dependenciesFulfilled = null;
-var runDependencyTracking = {};
 function addRunDependency(id) {
  runDependencies++;
  if (Module["monitorRunDependencies"]) {
   Module["monitorRunDependencies"](runDependencies);
- }
- if (id) {
-  assert(!runDependencyTracking[id]);
-  runDependencyTracking[id] = 1;
-  if (runDependencyWatcher === null && typeof setInterval !== "undefined") {
-   runDependencyWatcher = setInterval((function() {
-    if (ABORT) {
-     clearInterval(runDependencyWatcher);
-     runDependencyWatcher = null;
-     return;
-    }
-    var shown = false;
-    for (var dep in runDependencyTracking) {
-     if (!shown) {
-      shown = true;
-      Module.printErr("still waiting on run dependencies:");
-     }
-     Module.printErr("dependency: " + dep);
-    }
-    if (shown) {
-     Module.printErr("(end of list)");
-    }
-   }), 1e4);
-  }
- } else {
-  Module.printErr("warning: run dependency added without ID");
  }
 }
 Module["addRunDependency"] = addRunDependency;
@@ -1126,12 +1059,6 @@ function removeRunDependency(id) {
  runDependencies--;
  if (Module["monitorRunDependencies"]) {
   Module["monitorRunDependencies"](runDependencies);
- }
- if (id) {
-  assert(runDependencyTracking[id]);
-  delete runDependencyTracking[id];
- } else {
-  Module.printErr("warning: run dependency removed without ID");
  }
  if (runDependencies == 0) {
   if (runDependencyWatcher !== null) {
@@ -1149,43 +1076,6 @@ Module["removeRunDependency"] = removeRunDependency;
 Module["preloadedImages"] = {};
 Module["preloadedAudios"] = {};
 var memoryInitializer = null;
-var FS = {
- error: (function() {
-  abort("Filesystem support (FS) was not included. The problem is that you are using files from JS, but files were not used from C/C++, so filesystem support was not auto-included. You can force-include filesystem support with  -s FORCE_FILESYSTEM=1");
- }),
- init: (function() {
-  FS.error();
- }),
- createDataFile: (function() {
-  FS.error();
- }),
- createPreloadedFile: (function() {
-  FS.error();
- }),
- createLazyFile: (function() {
-  FS.error();
- }),
- open: (function() {
-  FS.error();
- }),
- mkdev: (function() {
-  FS.error();
- }),
- registerDevice: (function() {
-  FS.error();
- }),
- analyzePath: (function() {
-  FS.error();
- }),
- loadFilesFromDB: (function() {
-  FS.error();
- }),
- ErrnoError: function ErrnoError() {
-  FS.error();
- }
-};
-Module["FS_createDataFile"] = FS.createDataFile;
-Module["FS_createPreloadedFile"] = FS.createPreloadedFile;
 function integrateWasmJS(Module) {
  var method = Module["wasmJSMethod"] || "native-wasm,asmjs";
  Module["wasmJSMethod"] = method;
@@ -1393,7 +1283,6 @@ function integrateWasmJS(Module) {
      return null;
     }
    } catch (e) {
-    console.error("Module.reallocBuffer: Attempted to grow from " + oldSize + " bytes to " + size + " bytes, but got error: " + e);
     return null;
    }
   } else {
@@ -1464,9 +1353,8 @@ Module["STATIC_BASE"] = STATIC_BASE;
 Module["STATIC_BUMP"] = STATIC_BUMP;
 var tempDoublePtr = STATICTOP;
 STATICTOP += 16;
-assert(tempDoublePtr % 8 == 0);
 function ___setErrNo(value) {
- if (Module["___errno_location"]) HEAP32[Module["___errno_location"]() >> 2] = value; else Module.printErr("failed to set errno from JS");
+ if (Module["___errno_location"]) HEAP32[Module["___errno_location"]() >> 2] = value;
  return value;
 }
 Module["_sbrk"] = _sbrk;
@@ -1595,22 +1483,6 @@ STACK_MAX = STACK_BASE + TOTAL_STACK;
 DYNAMIC_BASE = Runtime.alignMemory(STACK_MAX);
 HEAP32[DYNAMICTOP_PTR >> 2] = DYNAMIC_BASE;
 staticSealed = true;
-assert(DYNAMIC_BASE < TOTAL_MEMORY, "TOTAL_MEMORY not big enough for stack");
-function nullFunc_ii(x) {
- Module["printErr"]("Invalid function pointer called with signature 'ii'. Perhaps this is an invalid value (e.g. caused by calling a virtual method on a NULL pointer)? Or calling a function with an incorrect type, which will fail? (it is worth building your source files with -Werror (warnings are errors), as warnings can indicate undefined behavior which can cause this)");
- Module["printErr"]("Build with ASSERTIONS=2 for more info.");
- abort(x);
-}
-function nullFunc_iiii(x) {
- Module["printErr"]("Invalid function pointer called with signature 'iiii'. Perhaps this is an invalid value (e.g. caused by calling a virtual method on a NULL pointer)? Or calling a function with an incorrect type, which will fail? (it is worth building your source files with -Werror (warnings are errors), as warnings can indicate undefined behavior which can cause this)");
- Module["printErr"]("Build with ASSERTIONS=2 for more info.");
- abort(x);
-}
-function nullFunc_vi(x) {
- Module["printErr"]("Invalid function pointer called with signature 'vi'. Perhaps this is an invalid value (e.g. caused by calling a virtual method on a NULL pointer)? Or calling a function with an incorrect type, which will fail? (it is worth building your source files with -Werror (warnings are errors), as warnings can indicate undefined behavior which can cause this)");
- Module["printErr"]("Build with ASSERTIONS=2 for more info.");
- abort(x);
-}
 Module["wasmTableSize"] = 8;
 Module["wasmMaxTableSize"] = 8;
 function invoke_ii(index, a1) {
@@ -1656,10 +1528,6 @@ Module.asmLibraryArg = {
  "enlargeMemory": enlargeMemory,
  "getTotalMemory": getTotalMemory,
  "abortOnCannotGrowMemory": abortOnCannotGrowMemory,
- "abortStackOverflow": abortStackOverflow,
- "nullFunc_ii": nullFunc_ii,
- "nullFunc_iiii": nullFunc_iiii,
- "nullFunc_vi": nullFunc_vi,
  "invoke_ii": invoke_ii,
  "invoke_iiii": invoke_iiii,
  "invoke_vi": invoke_vi,
@@ -1684,102 +1552,6 @@ Module.asmLibraryArg = {
 
 var asm =Module["asm"]// EMSCRIPTEN_END_ASM
 (Module.asmGlobalArg, Module.asmLibraryArg, buffer);
-var real__malloc = asm["_malloc"];
-asm["_malloc"] = (function() {
- assert(runtimeInitialized, "you need to wait for the runtime to be ready (e.g. wait for main() to be called)");
- assert(!runtimeExited, "the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)");
- return real__malloc.apply(null, arguments);
-});
-var real_getTempRet0 = asm["getTempRet0"];
-asm["getTempRet0"] = (function() {
- assert(runtimeInitialized, "you need to wait for the runtime to be ready (e.g. wait for main() to be called)");
- assert(!runtimeExited, "the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)");
- return real_getTempRet0.apply(null, arguments);
-});
-var real__fflush = asm["_fflush"];
-asm["_fflush"] = (function() {
- assert(runtimeInitialized, "you need to wait for the runtime to be ready (e.g. wait for main() to be called)");
- assert(!runtimeExited, "the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)");
- return real__fflush.apply(null, arguments);
-});
-var real_setTempRet0 = asm["setTempRet0"];
-asm["setTempRet0"] = (function() {
- assert(runtimeInitialized, "you need to wait for the runtime to be ready (e.g. wait for main() to be called)");
- assert(!runtimeExited, "the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)");
- return real_setTempRet0.apply(null, arguments);
-});
-var real_establishStackSpace = asm["establishStackSpace"];
-asm["establishStackSpace"] = (function() {
- assert(runtimeInitialized, "you need to wait for the runtime to be ready (e.g. wait for main() to be called)");
- assert(!runtimeExited, "the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)");
- return real_establishStackSpace.apply(null, arguments);
-});
-var real__pthread_self = asm["_pthread_self"];
-asm["_pthread_self"] = (function() {
- assert(runtimeInitialized, "you need to wait for the runtime to be ready (e.g. wait for main() to be called)");
- assert(!runtimeExited, "the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)");
- return real__pthread_self.apply(null, arguments);
-});
-var real_stackSave = asm["stackSave"];
-asm["stackSave"] = (function() {
- assert(runtimeInitialized, "you need to wait for the runtime to be ready (e.g. wait for main() to be called)");
- assert(!runtimeExited, "the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)");
- return real_stackSave.apply(null, arguments);
-});
-var real__fib = asm["_fib"];
-asm["_fib"] = (function() {
- assert(runtimeInitialized, "you need to wait for the runtime to be ready (e.g. wait for main() to be called)");
- assert(!runtimeExited, "the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)");
- return real__fib.apply(null, arguments);
-});
-var real__sbrk = asm["_sbrk"];
-asm["_sbrk"] = (function() {
- assert(runtimeInitialized, "you need to wait for the runtime to be ready (e.g. wait for main() to be called)");
- assert(!runtimeExited, "the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)");
- return real__sbrk.apply(null, arguments);
-});
-var real_stackRestore = asm["stackRestore"];
-asm["stackRestore"] = (function() {
- assert(runtimeInitialized, "you need to wait for the runtime to be ready (e.g. wait for main() to be called)");
- assert(!runtimeExited, "the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)");
- return real_stackRestore.apply(null, arguments);
-});
-var real_stackAlloc = asm["stackAlloc"];
-asm["stackAlloc"] = (function() {
- assert(runtimeInitialized, "you need to wait for the runtime to be ready (e.g. wait for main() to be called)");
- assert(!runtimeExited, "the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)");
- return real_stackAlloc.apply(null, arguments);
-});
-var real__manipArr = asm["_manipArr"];
-asm["_manipArr"] = (function() {
- assert(runtimeInitialized, "you need to wait for the runtime to be ready (e.g. wait for main() to be called)");
- assert(!runtimeExited, "the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)");
- return real__manipArr.apply(null, arguments);
-});
-var real__free = asm["_free"];
-asm["_free"] = (function() {
- assert(runtimeInitialized, "you need to wait for the runtime to be ready (e.g. wait for main() to be called)");
- assert(!runtimeExited, "the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)");
- return real__free.apply(null, arguments);
-});
-var real__doubler = asm["_doubler"];
-asm["_doubler"] = (function() {
- assert(runtimeInitialized, "you need to wait for the runtime to be ready (e.g. wait for main() to be called)");
- assert(!runtimeExited, "the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)");
- return real__doubler.apply(null, arguments);
-});
-var real_setThrew = asm["setThrew"];
-asm["setThrew"] = (function() {
- assert(runtimeInitialized, "you need to wait for the runtime to be ready (e.g. wait for main() to be called)");
- assert(!runtimeExited, "the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)");
- return real_setThrew.apply(null, arguments);
-});
-var real____errno_location = asm["___errno_location"];
-asm["___errno_location"] = (function() {
- assert(runtimeInitialized, "you need to wait for the runtime to be ready (e.g. wait for main() to be called)");
- assert(!runtimeExited, "the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)");
- return real____errno_location.apply(null, arguments);
-});
 var _malloc = Module["_malloc"] = asm["_malloc"];
 var getTempRet0 = Module["getTempRet0"] = asm["getTempRet0"];
 var _fflush = Module["_fflush"] = asm["_fflush"];
@@ -1822,9 +1594,6 @@ if (memoryInitializer) {
   addRunDependency("memory initializer");
   var applyMemoryInitializer = (function(data) {
    if (data.byteLength) data = new Uint8Array(data);
-   for (var i = 0; i < data.length; i++) {
-    assert(HEAPU8[Runtime.GLOBAL_BASE + i] === 0, "area for memory initializer should not have been touched before it's loaded");
-   }
    HEAPU8.set(data, Runtime.GLOBAL_BASE);
    if (Module["memoryInitializerRequest"]) delete Module["memoryInitializerRequest"].response;
    removeRunDependency("memory initializer");
@@ -1869,8 +1638,6 @@ dependenciesFulfilled = function runCaller() {
  if (!Module["calledRun"]) dependenciesFulfilled = runCaller;
 };
 Module["callMain"] = Module.callMain = function callMain(args) {
- assert(runDependencies == 0, "cannot call main when async dependencies remain! (listen on __ATMAIN__)");
- assert(__ATPRERUN__.length == 0, "cannot call main when preRun functions remain to be called");
  args = args || [];
  ensureInitRuntime();
  var argc = args.length + 1;
@@ -1908,10 +1675,8 @@ function run(args) {
  args = args || Module["arguments"];
  if (preloadStartTime === null) preloadStartTime = Date.now();
  if (runDependencies > 0) {
-  Module.printErr("run() called, but dependencies remain, so not running");
   return;
  }
- writeStackCookie();
  preRun();
  if (runDependencies > 0) return;
  if (Module["calledRun"]) return;
@@ -1921,9 +1686,6 @@ function run(args) {
   if (ABORT) return;
   ensureInitRuntime();
   preMain();
-  if (ENVIRONMENT_IS_WEB && preloadStartTime !== null) {
-   Module.printErr("pre-main prep time: " + (Date.now() - preloadStartTime) + " ms");
-  }
   if (Module["onRuntimeInitialized"]) Module["onRuntimeInitialized"]();
   if (Module["_main"] && shouldRunNow) Module["callMain"](args);
   postRun();
@@ -1939,17 +1701,13 @@ function run(args) {
  } else {
   doRun();
  }
- checkStackCookie();
 }
 Module["run"] = Module.run = run;
 function exit(status, implicit) {
  if (implicit && Module["noExitRuntime"]) {
-  Module.printErr("exit(" + status + ") implicitly called by end of main(), but noExitRuntime, so not exiting the runtime (you can use emscripten_force_exit, if you want to force a true shutdown)");
   return;
  }
- if (Module["noExitRuntime"]) {
-  Module.printErr("exit(" + status + ") called, but noExitRuntime, so halting execution but not exiting the runtime or preventing further async execution (you can use emscripten_force_exit, if you want to force a true shutdown)");
- } else {
+ if (Module["noExitRuntime"]) {} else {
   ABORT = true;
   EXITSTATUS = status;
   STACKTOP = initialStackTop;
@@ -1975,7 +1733,7 @@ function abort(what) {
  }
  ABORT = true;
  EXITSTATUS = 1;
- var extra = "";
+ var extra = "\nIf this abort() is unexpected, build with -s ASSERTIONS=1 which can give more information.";
  var output = "abort(" + what + ") at " + stackTrace() + extra;
  if (abortDecorators) {
   abortDecorators.forEach((function(decorator) {
