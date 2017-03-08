@@ -24,6 +24,9 @@ function loadWASM () {
                 _free(mem);
                 return greyScaled;
               };
+
+              cMath['manipArr'] = Module.cwrap('manipArr', null, ['number', 'number']);
+
               resolve(cMath);
             };
             document.body.appendChild(script);
