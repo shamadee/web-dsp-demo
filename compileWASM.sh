@@ -2,6 +2,7 @@
 
 # use path to emsdk folder, relative to this directory
 BASEDIR="./../emsdk"
+BASEDIRSHA="./../../../Documents/emsdk"
 EMSDK_ENV=$(find "$BASEDIR" -type f -name "emsdk_env.sh")
 source "$EMSDK_ENV"
 

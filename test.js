@@ -84,17 +84,25 @@ function createCanvas() {
 function loop() {
   animation = requestAnimationFrame(() => { loop(); });
   pixels = getPixels();
+  // console.log('pixel data', pixels.data);
+  // console.log('greyscale', m.greyScale(pixels.data));
+  
+  pixels.data.set(m.greyScale(pixels.data));
   // let newPixelData = [...Array(1000).keys()];
-  len = pixels.data.length;
+  // len = pixels.data.length;
   // console.log('before: ', pixels.data);
-  mem = _malloc(len); // 4 = RGBA
-  HEAPU8.set(pixels.data, mem);
+  // console.log(m);
+  // mem = _malloc(len); // 4 = RGBA
+  // HEAPU8.set(pixels.data, mem);
   // console.log('before', HEAPU8.subarray(mem, mem + len));
-  m.manipArr(mem, len);
+  // console.log('Module', Module);
+  
+  // m.manipArr(mem, len);
+  // Module._greyScale(mem, len);
   // console.log('after', HEAPU8.subarray(mem, mem + len));
-  pixels.data.set(HEAPU8.subarray(mem, mem + len));
+  // pixels.data.set(HEAPU8.subarray(mem, mem + len));
   // console.log('after: ', pixels.data);
-  _free(mem); // free memory
+  // _free(mem); // free memory
   ctx2.putImageData(pixels, 0, 0);
   // ctx.drawImage(canv2, 0, 0, winWidth, vHeight);
   ctx.drawImage(canv2, 0, 0, 720, 486);
