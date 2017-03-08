@@ -19,9 +19,24 @@ extern "C" {
       int a = data[i+3];
       int brightness = (r*.21+g*.72+b*.07);
 
-      data[i] = r;
+      data[i] = 0;
       data[i+1] = g;
       data[i+2] = b;
+      data[i+3] = a;
+    }
+  }
+
+  void greyScale(char* data, int len) {
+    for (int i = 0; i < len; i += 4) {
+      int r = data[i];
+      int g = data[i+1];
+      int b = data[i+2];
+      int a = data[i+3];
+      int brightness = (r*.21+g*.72+b*.07);
+
+      data[i] = brightness;
+      data[i+1] = brightness;
+      data[i+2] = brightness;
       data[i+3] = a;
     }
   }

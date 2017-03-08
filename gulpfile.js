@@ -25,3 +25,7 @@ gulp.task('browser-sync', ['recompile'], () => {
 });
 
 gulp.watch('math.cpp', ['recompile']);
+
+gulp.watch(['test.js', 'wasmMath.js', 'index.html'], () => {
+  bs.reload();
+});

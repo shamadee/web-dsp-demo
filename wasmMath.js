@@ -13,6 +13,7 @@ function loadWASM () {
               cMath['double'] = Module.cwrap('doubler', 'number', ['number']);
               cMath['fib'] = Module.cwrap('fib', 'number', ['number']);
               cMath['manipArr'] = Module.cwrap('manipArr', null, ['number', 'number']);
+              cMath['greyScale'] = Module.cwrap('greyScale', null, ['number', 'number']);
               resolve(cMath);
             };
             document.body.appendChild(script);

@@ -20,6 +20,7 @@
   "homepage": "https://github.com/matzewagner/load-wasm#readme",
   "dependencies": {
     "express": "^4.15.0",
+    "nodemon": "^1.11.0",
     "path": "^0.12.7"
   },
   "devDependencies": {
