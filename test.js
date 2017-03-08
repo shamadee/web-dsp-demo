@@ -87,7 +87,6 @@ function loop() {
   // let newPixelData = [...Array(1000).keys()];
   len = pixels.data.length;
   // console.log('before: ', pixels.data);
-  // console.log(m);
   mem = _malloc(len); // 4 = RGBA
   HEAPU8.set(pixels.data, mem);
   // console.log('before', HEAPU8.subarray(mem, mem + len));
