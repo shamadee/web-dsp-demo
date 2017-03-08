@@ -9,7 +9,6 @@ function loadWASM () {
             var script = document.createElement('script');
             script.src = 'cMath.js';
             script.onload = function () {
-              console.log('Module', Module);
               console.log('Emscripten boilerplate loaded.');
               // cMath['double'] = Module.cwrap('doubler', 'number', ['number']);
               // cMath['fib'] = Module.cwrap('fib', 'number', ['number']);

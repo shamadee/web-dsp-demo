@@ -29,8 +29,10 @@ loadWASM()
 
 let canv, ctx, canv2, ctx2, ratio, winWidth, winHeight, vid, vHeight, c2Width, c2Height, animation, pixels;
 let mem, len;
+let t0, t1, t2, t3;
+let stats, perf1, perf2, perfStr1, perfStr2, statsText, line1, line2;
 
-function initVideo(fName, module, width=window.innerWidth, height=window.innerHeight) {
+function initVideo(fName, module, width=window.innerWidth-200, height=window.innerHeight-200) {
   winWidth = width;
   winHeight = height;
 
@@ -52,6 +54,7 @@ function vidLoaded() {
   vid.width = winWidth;
   vid.height = winHeight;
 
+  createStats();
   createCanvas();
 }
 
@@ -81,32 +84,77 @@ function createCanvas() {
   loop();
 }
 
+function createStats() {
+  stats = document.createElement('div');
+  stats.id = 'stats';
+  stats.textContent = 'status';
+  document.body.appendChild(stats);
+  
+  statsGraph = document.createElement('canvas');
+  statsGraph.id = 'statsCanvas';
+  document.body.appendChild(statsGraph);
+  let smoothie = new SmoothieChart({
+    maxValueScale: 1.1,
+    minValueScale: 0.5,
+    grid: {
+      strokeStyle: 'rgb(60, 60, 60)',
+      fillStyle: 'rgb(30, 30, 30)',
+      lineWidth: 1,
+      millisPerLine: 250,
+      verticalSections: 5,
+    },
+    labels: {
+      fillStyle: 'rgb(255, 255, 255)',
+      fontSize: 14,
+    },
+  });
+  smoothie.streamTo(document.getElementById('statsCanvas'), 1000);
+
+  line1 = new TimeSeries();
+  line2 = new TimeSeries();
+
+  smoothie.addTimeSeries(line1,
+    {
+      strokeStyle: 'rgb(0, 255, 0)',
+      fillStyle: 'rgba(0, 255, 0, 0.05)',
+      lineWidth: 3,
+    }
+  );
+  smoothie.addTimeSeries(line2,
+    { strokeStyle: 'rgb(0, 0, 255)',
+      fillStyle: 'rgba(0, 0, 255, 0.05)',
+      lineWidth: 3,
+    }
+  );
+}
+
 function loop() {
   animation = requestAnimationFrame(() => { loop(); });
   pixels = getPixels();
   // console.log('pixel data', pixels.data);
   // console.log('greyscale', m.greyScale(pixels.data));
-  
+  t0 = performance.now();
   pixels.data.set(m.greyScale(pixels.data));
-  // let newPixelData = [...Array(1000).keys()];
-  // len = pixels.data.length;
-  // console.log('before: ', pixels.data);
-  // console.log(m);
-  // mem = _malloc(len); // 4 = RGBA
-  // HEAPU8.set(pixels.data, mem);
-  // console.log('before', HEAPU8.subarray(mem, mem + len));
-  // console.log('Module', Module);
-  
-  // m.manipArr(mem, len);
-  // Module._greyScale(mem, len);
-  // console.log('after', HEAPU8.subarray(mem, mem + len));
-  // pixels.data.set(HEAPU8.subarray(mem, mem + len));
-  // console.log('after: ', pixels.data);
-  // _free(mem); // free memory
+  t1 = performance.now();
+  if (animation % 60 === 0) {
+    perf1 = t1 - t0;
+    perfStr1 = perf1.toString().slice(0, 4);
+    t2 = performance.now();
+    jsGreyScale(pixels.data);
+    t3 = performance.now();
+    perf2 = t3 - t2;
+    perfStr2 = perf2.toString().slice(0, 5);
+    statsText = `JS refresh rate: ${perfStr2} ms
+    WASM refresh rate: ${perfStr1} ms`;
+    document.getElementById("stats").textContent = statsText;
+
+    line1.append(new Date().getTime(), 1000 / perf1);
+    line2.append(new Date().getTime(), 1000 / perf2);
+
+  }
   ctx2.putImageData(pixels, 0, 0);
   // ctx.drawImage(canv2, 0, 0, winWidth, vHeight);
   ctx.drawImage(canv2, 0, 0, 720, 486);
-
   draw();
 }
 
@@ -117,4 +165,19 @@ function draw() {
 function getPixels() {
   ctx2.drawImage(vid, 0, 0, canv2Width, canv2Height);
   return ctx2.getImageData(0, 0, canv2Width, canv2Height);
+}
+
+function jsGreyScale(data) {
+    for (let i = 0; i < data.length; i += 4) {
+      let r = data[i];
+      let g = data[i+1];
+      let b = data[i+2];
+      let a = data[i+3];
+      let brightness = (r*.21+g*.72+b*.07);
+
+      data[i] = r;
+      data[i+1] = r;
+      data[i+2] = r;
+      data[i+3] = 10;
+    }
 }

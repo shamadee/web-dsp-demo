@@ -1,0 +1,13 @@
+#stats {
+  position: absolute;
+  bottom: 230;
+  left: 20;
+}
+
+#statsCanvas {
+  position: absolute;
+  bottom: 100;
+  left: 20;
+  height: 120;
+  width: 300;
+}
