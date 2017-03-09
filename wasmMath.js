@@ -23,11 +23,21 @@ function loadWASM () {
                 _free(mem);
                 return greyScaled;
               };
+              cMath['convFilt'] = function(array, width, height) {
+                mem = _malloc(array.length);
+                HEAPU8.set(array, mem);
+                Module._convFilter(mem, width, height);
+                const greyScaled = HEAPU8.subarray(mem, mem + array.length);
+                _free(mem);
+                return greyScaled;
+              };
 
               cMath['manipArr'] = Module.cwrap('manipArr', null, ['number', 'number']);
+              cMath['manipSingle'] = Module.cwrap('manipSingle', 'number', ['number']);
 
               resolve(cMath);
             };
+
             document.body.appendChild(script);
         });
   });
