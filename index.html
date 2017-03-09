@@ -1,0 +1,16 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <script type="text/javascript" src="smoothie.js"></script>
+  <script src='wasmMath.js'></script>
+  <script src='test.js'></script>
+  <link rel="Stylesheet" href="style.css" type="text/css">
+</head>
+<body>
+  <h1>WASM Example</h1>
+</body>
+</html>
+
+<!--Build math.c using 
+
+emcc math.c -Os -s WASM=1 -s SIDE_MODULE=1 -o math.wasm-->
