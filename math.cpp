@@ -1,4 +1,5 @@
 #include <math.h>
+#include <stdlib.h>
 // #include <stdio.h>
 
 extern "C" {
@@ -51,6 +52,16 @@ extern "C" {
       data[i] = 255 - data[i]; //r
       data[i+1] = 255 - data[i+1]; //g
       data[i+2] = 255 - data[i+2]; //b
+    }
+  }
+
+  void noise (unsigned char* data, int len) {
+    int random; 
+    for (int i = 0; i < len; i += 4) {
+      random = (rand() % 70) - 35;
+      data[i] = data[i] + random; //r
+      data[i+1] = data[i+1] + random; //g
+      data[i+2] = data[i+2] + random; //b
     }
   }
   
