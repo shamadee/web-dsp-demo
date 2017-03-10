@@ -1,4 +1,5 @@
 let m;
+let filter = 'Normal';
 loadWASM()
   .then(cMath => {
     m = cMath;
@@ -32,7 +33,6 @@ function vidLoaded() {
   vHeight = winWidth * ratio;
   vid.width = winWidth;
   vid.height = winHeight;
-
   createCanvas();
   createStats();
   addButtons();
@@ -120,14 +120,16 @@ function loop() {
   animation = requestAnimationFrame(() => { loop(); });
   pixels = getPixels();
   t0 = performance.now();
-  //pixels.data.set(m.convFilt(pixels.data, 720, 486));
-  //pixels.data.set(m.greyScale(pixels.data));
-  //pixels.data.set(m.brighten(pixels.data));
-  //pixels.data.set(m.invert(pixels.data));
-  //pixels.data.set(m.noise(pixels.data));
-  pixels.data.set(m.edgeManip(pixels.data, 4, canv2Width)); //red cyan
-  //pixels.data.set(m.edgeManip(pixels.data, 7, canv2Width)); //dots
-  //pixels.data.set(m.edgeManip(pixels.data, 1, canv2Width)); //emboss
+  //write switch case - button will change a var and based on that var it will trigger one of these
+
+  if (filter === 'Grayscale') pixels.data.set(m.greyScale(pixels.data));
+  if (filter === 'Brighten') pixels.data.set(m.brighten(pixels.data));
+  if (filter === 'Invert') pixels.data.set(m.invert(pixels.data));
+  if (filter === 'Noise') pixels.data.set(m.noise(pixels.data));
+  if (filter === 'Sunset') pixels.data.set(m.edgeManip(pixels.data, 4, canv2Width)); //red cyan
+  if (filter === 'Analog TV') pixels.data.set(m.edgeManip(pixels.data, 7, canv2Width)); //dots
+  if (filter === 'Emboss') pixels.data.set(m.edgeManip(pixels.data, 1, canv2Width)); //emboss
+  if (filter === 'Super Edge') pixels.data.set(m.convFilt(pixels.data, 720, 486));
   t1 = performance.now();
   t2 = performance.now();
   // jsData = convFilter(pixels.data);
@@ -247,11 +249,17 @@ function convFilter(data, height=486, width=720) {
     return data; //sobelData;
 }
 
-function addButtons () {
+function addButtons (filtersArr) {
+  let filters = ['Normal', 'Grayscale', 'Brighten', 'Invert', 'Noise', 'Sunset', 'Analog TV', 'Emboss', 'Super Edge']
   let buttonDiv = document.createElement('div');
-  let button = document.createElement('button');
-  button.innerText = 'Hello';
-  document.body.appendChild(button);
+  buttonDiv.id = 'buttons';
+  document.body.appendChild(buttonDiv);
+  for (let i = 0; i < filters.length; i++) {
+    let button = document.createElement('button');
+    button.innerText = filters[i];
+    button.addEventListener('click', () => filter = filters[i]);
+    buttonDiv.appendChild(button);
+  }
 }
 
 /* stuff that's not filters 
