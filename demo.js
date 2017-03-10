@@ -3,7 +3,7 @@ loadWASM()
   .then(cMath => {
     m = cMath;
     window.onload = initVideo('media/vid.mp4', m);
-  });
+});
 
 let canv, ctx, canv2, ctx2, ratio, winWidth, winHeight, vid, vHeight, c2Width, c2Height, animation, pixels;
 let mem, len;
@@ -19,7 +19,7 @@ function initVideo(fName, module, width=window.innerWidth-100, height=window.inn
   vid.src = fName;
   vid.autoplay = true;
   vid.loop = true;
-  
+
 
   vid.addEventListener("loadedmetadata", vidLoaded, false);
 }
@@ -33,8 +33,9 @@ function vidLoaded() {
   vid.width = winWidth;
   vid.height = winHeight;
 
-  createStats();
   createCanvas();
+  createStats();
+  addButtons();
 }
 
 function createCanvas() {
@@ -244,6 +245,13 @@ function convFilter(data, height=486, width=720) {
             }
         }
     return data; //sobelData;
+}
+
+function addButtons () {
+  let buttonDiv = document.createElement('div');
+  let button = document.createElement('button');
+  button.innerText = 'Hello';
+  document.body.appendChild(button);
 }
 
 /* stuff that's not filters 

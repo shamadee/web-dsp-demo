@@ -11,3 +11,8 @@
   height: 120;
   width: 300;
 }
+
+button {
+  position: absolute;
+  left: 750px;
+}
