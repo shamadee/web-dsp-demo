@@ -56,6 +56,14 @@ function loadWASM () {
                 _free(mem);
                 return noise;
               };
+              cMath['edgeManip'] = function(array, filt, c2Width) {
+                mem = _malloc(array.length);
+                HEAPU8.set(array, mem);
+                Module._edgeManip(mem, array.length, filt, c2Width);
+                const edgeManip = HEAPU8.subarray(mem, mem + array.length);
+                _free(mem);
+                return edgeManip;
+              };
 
               cMath['manipArr'] = Module.cwrap('manipArr', null, ['number', 'number']);
               cMath['manipSingle'] = Module.cwrap('manipSingle', 'number', ['number']);

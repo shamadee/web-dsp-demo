@@ -64,7 +64,14 @@ extern "C" {
       data[i+2] = data[i+2] + random; //b
     }
   }
-  
+  void edgeManip (unsigned char* data, int len, int filt, int c2Width) {
+    for (int i = 0; i < len; i += filt) {
+      if (i % 4 != 3) {
+        data[i] = 127 + 2 * data[i] - data[i + 4] - data[i + c2Width * 4];
+      }
+    }
+  }
+
   const int WIDTH = 720;
   const int HEIGHT = 486;
   int grayData[WIDTH * HEIGHT];

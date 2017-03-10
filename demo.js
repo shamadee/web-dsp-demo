@@ -123,7 +123,10 @@ function loop() {
   //pixels.data.set(m.greyScale(pixels.data));
   //pixels.data.set(m.brighten(pixels.data));
   //pixels.data.set(m.invert(pixels.data));
-  pixels.data.set(m.noise(pixels.data));
+  //pixels.data.set(m.noise(pixels.data));
+  pixels.data.set(m.edgeManip(pixels.data, 4, canv2Width)); //red cyan
+  //pixels.data.set(m.edgeManip(pixels.data, 7, canv2Width)); //dots
+  //pixels.data.set(m.edgeManip(pixels.data, 1, canv2Width)); //emboss
   t1 = performance.now();
   t2 = performance.now();
   // jsData = convFilter(pixels.data);
