@@ -121,7 +121,8 @@ function loop() {
   t0 = performance.now();
   //pixels.data.set(m.convFilt(pixels.data, 720, 486));
   //pixels.data.set(m.greyScale(pixels.data));
-  pixels.data.set(m.brighten(pixels.data));
+  //pixels.data.set(m.brighten(pixels.data));
+  pixels.data.set(m.invert(pixels.data));
   t1 = performance.now();
   
   t2 = performance.now();
