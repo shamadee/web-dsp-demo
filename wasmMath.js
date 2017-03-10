@@ -15,6 +15,7 @@ function loadWASM () {
               // cMath['manipArr'] = Module.cwrap('manipArr', null, ['number', 'number']);
               cMath['doubler'] = _doubler;
               cMath['fib'] = _fib;
+              //filters
               cMath['greyScale'] = function(array) {
                 mem = _malloc(array.length);
                 HEAPU8.set(array, mem);
@@ -27,10 +28,19 @@ function loadWASM () {
                 mem = _malloc(array.length);
                 HEAPU8.set(array, mem);
                 Module._convFilter(mem, width, height);
-                const greyScaled = HEAPU8.subarray(mem, mem + array.length);
+                const convFilter = HEAPU8.subarray(mem, mem + array.length);
                 _free(mem);
-                return greyScaled;
+                return convFilter;
               };
+              cMath['brighten'] = function(array) {
+                mem = _malloc(array.length);
+                HEAPU8.set(array, mem);
+                Module._brighten(mem, array.length);
+                const brighten = HEAPU8.subarray(mem, mem + array.length);
+                _free(mem);
+                return brighten;
+              };
+              
 
               cMath['manipArr'] = Module.cwrap('manipArr', null, ['number', 'number']);
               cMath['manipSingle'] = Module.cwrap('manipSingle', 'number', ['number']);
