@@ -45,6 +45,14 @@ extern "C" {
       data[i+2] + data[i+2] + brightness > 255 ? 255 : data[i+2] += brightness;
     }
   }
+
+  void invert(unsigned char* data, int len) {
+    for (int i = 0; i < len; i += 4) {
+      data[i] = 255 - data[i]; //r
+      data[i+1] = 255 - data[i+1]; //g
+      data[i+2] = 255 - data[i+2]; //b
+    }
+  }
   
   const int WIDTH = 720;
   const int HEIGHT = 486;

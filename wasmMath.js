@@ -40,6 +40,14 @@ function loadWASM () {
                 _free(mem);
                 return brighten;
               };
+              cMath['invert'] = function(array) {
+                mem = _malloc(array.length);
+                HEAPU8.set(array, mem);
+                Module._invert(mem, array.length);
+                const invert = HEAPU8.subarray(mem, mem + array.length);
+                _free(mem);
+                return invert;
+              };
               
 
               cMath['manipArr'] = Module.cwrap('manipArr', null, ['number', 'number']);
