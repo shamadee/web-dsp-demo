@@ -35,10 +35,6 @@ function vidLoaded() {
 
   createStats();
   createCanvas();
-  
-  callManipArr();
-  jsManipArr();
-  singleManip();
 }
 
 function createCanvas() {
@@ -122,10 +118,10 @@ function createStats() {
 function loop() {
   animation = requestAnimationFrame(() => { loop(); });
   pixels = getPixels();
-  // console.log('pixel data', pixels.data);
-  // console.log('greyscale', m.greyScale(pixels.data));
   t0 = performance.now();
-  pixels.data.set(m.convFilt(pixels.data, 720, 486));
+  //pixels.data.set(m.convFilt(pixels.data, 720, 486));
+  //pixels.data.set(m.greyScale(pixels.data));
+  pixels.data.set(m.brighten(pixels.data));
   t1 = performance.now();
   
   t2 = performance.now();
@@ -160,6 +156,9 @@ function getPixels() {
   return ctx2.getImageData(0, 0, canv2Width, canv2Height);
 }
 
+
+//Javascript Filters
+
 function jsGreyScale(data) {
     for (let i = 0; i < data.length; i += 4) {
       let r = data[i];
@@ -174,43 +173,6 @@ function jsGreyScale(data) {
       data[i+3] = a;
     }
     return data;
-}
-
-function callManipArr() {
-  const arr = [...Array(arrLen).keys()];
-  mem = _malloc(arr.length);
-  let tA = performance.now();
-  HEAPU8.set(arr, mem);
-  m.manipArr(mem, arr.length);
-  let tB = performance.now();
-  _free(mem);
-  console.log('wasm took ', tB - tA, ' ms');
-}
-
-function jsManipArr() {
-  const arr = [...Array(arrLen).keys()];
-  let tA = performance.now();
-  jsArr(arr);
-  let tB = performance.now();
-  console.log('js took ', tB - tA, ' ms');
-}
-
-function jsArr(arr) {
-  for (let i = 0; i < arr.length; i++) {
-    // arr[i] = Math.sqrt(arr[i]);
-    arr[i] = arr[i] * arr[i];
-  }
-}
-
-function singleManip() {
-  const arr = [...Array(arrLen).keys()];
-  let tA = performance.now();
-  let len = arr.length;
-  for (let i = 0; i < len; i++) {
-    arr[i] = m.manipSingle(arr[i]);
-  }
-  let tB = performance.now();
-  console.log('single took ', tB - tA, ' ms');
 }
 
 function convFilter(data, height=486, width=720) {
@@ -280,3 +242,42 @@ function convFilter(data, height=486, width=720) {
     return data; //sobelData;
 }
 
+/* stuff that's not filters 
+
+function callManipArr() {
+  const arr = [...Array(arrLen).keys()];
+  mem = _malloc(arr.length);
+  let tA = performance.now();
+  HEAPU8.set(arr, mem);
+  m.manipArr(mem, arr.length);
+  let tB = performance.now();
+  _free(mem);
+  console.log('wasm took ', tB - tA, ' ms');
+}
+
+function jsManipArr() {
+  const arr = [...Array(arrLen).keys()];
+  let tA = performance.now();
+  jsArr(arr);
+  let tB = performance.now();
+  console.log('js took ', tB - tA, ' ms');
+}
+
+function jsArr(arr) {
+  for (let i = 0; i < arr.length; i++) {
+    // arr[i] = Math.sqrt(arr[i]);
+    arr[i] = arr[i] * arr[i];
+  }
+}
+
+function singleManip() {
+  const arr = [...Array(arrLen).keys()];
+  let tA = performance.now();
+  let len = arr.length;
+  for (let i = 0; i < len; i++) {
+    arr[i] = m.manipSingle(arr[i]);
+  }
+  let tB = performance.now();
+  console.log('single took ', tB - tA, ' ms');
+}
+*/
