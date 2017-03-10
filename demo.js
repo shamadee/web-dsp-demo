@@ -123,9 +123,8 @@ function loop() {
   //pixels.data.set(m.greyScale(pixels.data));
   //pixels.data.set(m.brighten(pixels.data));
   //pixels.data.set(m.invert(pixels.data));
-  //pixels.data.set(m.noise(pixels.data));
+  pixels.data.set(m.noise(pixels.data));
   t1 = performance.now();
-  
   t2 = performance.now();
   // jsData = convFilter(pixels.data);
   // pixels.data.set(jsData);
