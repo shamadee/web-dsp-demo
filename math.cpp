@@ -1,4 +1,5 @@
 #include <math.h>
+#include <stdlib.h>
 // #include <stdio.h>
 
 extern "C" {
@@ -12,29 +13,16 @@ extern "C" {
   }
 
   void manipArr(unsigned char* data, int len) {
-    // for (int i = 0; i < len; i += 4) {
-    //   int r = data[i];
-    //   int g = data[i+1];
-    //   int b = data[i+2];
-    //   int a = data[i+3];
-    //   int brightness = (r*.21+g*.72+b*.07);
-
-    //   data[i] = 0;
-    //   data[i+1] = g;
-    //   data[i+2] = b;
-    //   data[i+3] = a;
-    // }
-
     for (int i = 0; i < len; i++) {
-      // data[i] = static_cast<int>sqrt(data[i]);
       data[i] = data[i] * data[i];
     }
   }
 
   float manipSingle(int a) {
-    // return sqrt(a);
     return a * a;
   }
+
+//start filters below
 
   void greyScale(unsigned char* data, int len) {
     for (int i = 0; i < len; i += 4) {
@@ -43,11 +31,37 @@ extern "C" {
       int b = data[i+2];
       int a = data[i+3];
       int brightness = (r*.21+g*.72+b*.07);
-
       data[i] = r;
       data[i+1] = r;
       data[i+2] = r;
       data[i+3] = a;
+    }
+  }
+  
+  void brighten(unsigned char* data, int len) {
+    int brightness = 25;
+    for (int i = 0; i < len; i += 4) {
+      data[i] + data[i] + brightness > 255 ? 255 : data[i] += brightness;
+      data[i+1] + data[i+1] + brightness > 255 ? 255 : data[i+1] += brightness;
+      data[i+2] + data[i+2] + brightness > 255 ? 255 : data[i+2] += brightness;
+    }
+  }
+
+  void invert(unsigned char* data, int len) {
+    for (int i = 0; i < len; i += 4) {
+      data[i] = 255 - data[i]; //r
+      data[i+1] = 255 - data[i+1]; //g
+      data[i+2] = 255 - data[i+2]; //b
+    }
+  }
+
+  void noise (unsigned char* data, int len) {
+    int random; 
+    for (int i = 0; i < len; i += 4) {
+      random = (rand() % 70) - 35;
+      data[i] = data[i] + random; //r
+      data[i+1] = data[i+1] + random; //g
+      data[i+2] = data[i+2] + random; //b
     }
   }
   
@@ -62,6 +76,7 @@ extern "C" {
   }
 
   void convFilter(unsigned char* data, int width, int height) {
+
       for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
             int goffset = ((WIDTH * y) + x) << 2; //multiply by 4
@@ -117,5 +132,6 @@ extern "C" {
       }
   }
 
+  
 
 }
