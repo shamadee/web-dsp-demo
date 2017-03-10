@@ -4,7 +4,8 @@
   "description": "This is a sample library using WebAssembly. To compile the C library download emscripten and run in terminal:",
   "main": "test.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "g++ ./test/test.cpp -o ./test/testCpp && ./test/testCpp",
+    "testCPP": "g++ ./test/test.cpp -o ./test/testCpp && ./test/testCpp",
     "start": "gulp",
     "cpp": "echo \"compiling C/C++ to WASM\" && . ./compileWASM.sh"
   },

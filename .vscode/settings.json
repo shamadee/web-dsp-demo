@@ -1,3 +1,7 @@
 {
-  "vsicons.presets.angular": false
+  "vsicons.presets.angular": false,
+  "files.associations": {
+    "iostream": "cpp",
+    "iosfwd": "cpp"
+  }
 }
