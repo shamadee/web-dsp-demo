@@ -19,8 +19,8 @@ function initVideo(fName, module, width=window.innerWidth-100, height=window.inn
   vid.src = fName;
   vid.autoplay = true;
   vid.loop = true;
+  // vid.playbackRate = 0.00001;
   
-
   vid.addEventListener("loadedmetadata", vidLoaded, false);
 }
 
@@ -124,8 +124,39 @@ function loop() {
   pixels = getPixels();
   // console.log('pixel data', pixels.data);
   // console.log('greyscale', m.greyScale(pixels.data));
+  // const kernel = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+  const kernelBright = [ 0, 1,  0, 
+                  -1,  5, 1, 
+                   0, 1,  12];
+
+  let kernel = [0, -1, 0, 
+                  -1, 5, -1, 
+                  0, -1, 0];
+  let kernelSoft = [1, 1, 1, 
+                    1, 1, 1, 
+                    1, 1, 1];
+  
+  // kernel = [ 1,0,-1, 
+  //            2,0,-2, 
+  //            1,0,-1];
+
+  // kernel = [-2, -1, 0,
+  //           -1,  1, 1,
+  //            0,  1, 2]
+
+  let divisor = kernel.reduce((a, b) => a + b, 0) || 1;
+
+  const kernelIdentity = [-1, -1, -1, 
+                          -1,  8, -1, 
+                          -1, -1, -1];
+  
+  const kH = [-1, -2, -1, 0, 0, 0, 1, 2, 1];
+
   t0 = performance.now();
-  pixels.data.set(m.convFilt(pixels.data, 720, 486));
+  // pixels.data.set(m.convFilt(pixels.data, 720, 486));
+  pixels.data.set(m.greyScale(pixels.data, pixels.data.length));
+  pixels.data.set(m.gaussFilt(pixels.data, kernel, divisor, 720, 486));
+  // m.gaussFilt(pixels.data, kernel, 720, 486)
   t1 = performance.now();
   
   t2 = performance.now();
