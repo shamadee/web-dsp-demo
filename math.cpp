@@ -30,7 +30,7 @@ extern "C" {
       int g = data[i+1];
       int b = data[i+2];
       int a = data[i+3];
-      int brightness = (r*.21+g*.72+b*.07);
+      // int brightness = (r*.21+g*.72+b*.07);
 
       data[i] = r;
       data[i+1] = r;
@@ -39,8 +39,8 @@ extern "C" {
     }
   }
   
-  void brighten(unsigned char* data, int len) {
-    int brightness = 25;
+  void brighten(unsigned char* data, int len, int brightness) {
+    // int brightness = 25;
     for (int i = 0; i < len; i += 4) {
       data[i] + data[i] + brightness > 255 ? 255 : data[i] += brightness;
       data[i+1] + data[i+1] + brightness > 255 ? 255 : data[i+1] += brightness;
@@ -73,28 +73,30 @@ extern "C" {
     }
   }
 
-  const int WIDTH = 720;
-  const int HEIGHT = 486;
-  int grayData[WIDTH * HEIGHT];
+  // const int WIDTH = 720;
+  // const int HEIGHT = 486;
 
-  int getPixel(int x, int y, int* arr) {
+  // int grayData[WIDTH * HEIGHT];
+
+  int getPixel(int x, int y, int* arr, int width, int height) {
     if (x < 0 || y < 0) return 0;
-    if (x >= (WIDTH) || y >= (HEIGHT)) return 0;
-    return (arr[((WIDTH * y) + x)]);
+    if (x >= (width) || y >= (height)) return 0;
+    return (arr[((width * y) + x)]);
   }
+
   void gaussFilter(float* data, int width, int height, float* kern, int Ks, double divisor, double offset) {
 
     for (int y = 50; y < height - 50; y++) {
       for (int x = 50; x < width - 50; x++) {
-        int offsetTL = ((WIDTH * (y - 1)) + (x - 1)) * 4;
-        int offsetT  = ((WIDTH * (y - 1)) + (  x  )) * 4;
-        int offsetTR = ((WIDTH * (y - 1)) + (x + 1)) * 4;
-        int offsetL  = ((WIDTH * (  y  )) + (x - 1)) * 4;
-        int offsetC  = ((WIDTH * (  y  )) + (  x  )) * 4;
-        int offsetR  = ((WIDTH * (  y  )) + (x + 1)) * 4;
-        int offsetBL = ((WIDTH * (y + 1)) + (x - 1)) * 4;
-        int offsetB  = ((WIDTH * (y + 1)) + (  x  )) * 4;
-        int offsetBR = ((WIDTH * (y + 1)) + (x + 1)) * 4;
+        int offsetTL = ((width * (y - 1)) + (x - 1)) * 4;
+        int offsetT  = ((width * (y - 1)) + (  x  )) * 4;
+        int offsetTR = ((width * (y - 1)) + (x + 1)) * 4;
+        int offsetL  = ((width * (  y  )) + (x - 1)) * 4;
+        int offsetC  = ((width * (  y  )) + (  x  )) * 4;
+        int offsetR  = ((width * (  y  )) + (x + 1)) * 4;
+        int offsetBL = ((width * (y + 1)) + (x - 1)) * 4;
+        int offsetB  = ((width * (y + 1)) + (  x  )) * 4;
+        int offsetBR = ((width * (y + 1)) + (x + 1)) * 4;
 
         int r00 = data[offsetTL + 0] * kern[0];
         int g00 = data[offsetTL + 1] * kern[0];
@@ -178,17 +180,18 @@ extern "C" {
   }
 
   void convFilter(unsigned char* data, int width, int height) {
+    int grayData[width * height];
     for (int y = 0; y < height; y++) {
       for (int x = 0; x < width; x++) {
-        int goffset = ((WIDTH * y) + x) << 2; //multiply by 4
+        int goffset = ((width * y) + x) << 2; //multiply by 4
         int r = data[goffset];
         int g = data[goffset + 1];
         int b = data[goffset + 2];
 
         int avg = (r >> 2) + (g >> 1) + (b >> 3);
-        grayData[((WIDTH * y) + x)] = avg;
+        grayData[((width * y) + x)] = avg;
 
-        int doffset = ((WIDTH * y) + x) << 2;
+        int doffset = ((width * y) + x) << 2;
         data[doffset] = avg;
         data[doffset + 1] = avg;
         data[doffset + 2] = avg;
@@ -224,7 +227,7 @@ extern "C" {
         }
         int mag = sqrt((newX * newX) + (newY * newY));
         if (mag > 255) mag = 255;
-        int offset = ((WIDTH * y) + x) << 2; //multiply by 4
+        int offset = ((width * y) + x) << 2; //multiply by 4
         data[offset] = 255 - mag;
         data[offset + 1] = 255 - mag;
         data[offset + 2] = 255 - mag;
