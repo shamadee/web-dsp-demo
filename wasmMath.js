@@ -19,6 +19,7 @@ function loadWASM () {
                 reject(newObj);
               }
               console.log('Emscripten boilerplate loaded.');
+              
               cMath['doubler'] = _doubler;
               cMath['fib'] = _fib;
 
@@ -31,19 +32,18 @@ function loadWASM () {
                 _free(mem);
                 return grayScaled;
               };
-
-              cMath['convFilt'] = function(array, width, height) {
+              cMath['sobelFilter'] = function(array, width, height) {
                 mem = _malloc(array.length);
                 HEAPU8.set(array, mem);
-                Module._convFilter(mem, width, height);
-                const convFilter = HEAPU8.subarray(mem, mem + array.length);
+                Module._sobelFilter(mem, width, height);
+                const filtered = HEAPU8.subarray(mem, mem + array.length);
                 _free(mem);
-                return convFilter;
+                return filtered;
               };
-              cMath['brighten'] = function(array) {
+              cMath['brighten'] = function(array, brightness = 25) {
                 mem = _malloc(array.length);
                 HEAPU8.set(array, mem);
-                Module._brighten(mem, array.length);
+                Module._brighten(mem, array.length, brightness);
                 const brighten = HEAPU8.subarray(mem, mem + array.length);
                 _free(mem);
                 return brighten;
@@ -72,14 +72,14 @@ function loadWASM () {
                 _free(mem);
                 return edgeManip;
               };
-              cMath['gaussFilt'] = function(array, kernel, divisor, width, height) {
+              cMath['convFilter'] = function(array, kernel, count, divisor, width, height) {
                 const arLen = array.length;
                 const memAdr = _malloc(arLen * Float32Array.BYTES_PER_ELEMENT);
                 HEAPF32.set(array, memAdr / Float32Array.BYTES_PER_ELEMENT);
                 const kerLen = kernel.length;
                 const memKrn = _malloc(kerLen * Float32Array.BYTES_PER_ELEMENT);
                 HEAPF32.set(kernel, memKrn / Float32Array.BYTES_PER_ELEMENT);
-                Module._gaussFilter(memAdr, width, height, memKrn, 1, divisor, 0.0);
+                Module._convFilter(memAdr, width, height, memKrn, 1, divisor, 0.0, count);
                 const filtered = HEAPF32.subarray(memAdr / Float32Array.BYTES_PER_ELEMENT, memAdr / Float32Array.BYTES_PER_ELEMENT + arLen);
                 _free(memAdr);
                 _free(memKrn);
@@ -87,9 +87,7 @@ function loadWASM () {
               }
               resolve(cMath);
             };
-
             document.body.appendChild(script);
         });
   });
 }
-
