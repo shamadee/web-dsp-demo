@@ -1,4 +1,4 @@
-let m;
+let m = {};
 let filter = 'Normal';
 let t0, t1 = Infinity, t2, t3 = Infinity, line1, line2, perf1, perf2, perfStr1, perfStr2, wasmStats, jsStats, percent;
 let pixels, pixels2;
@@ -7,12 +7,13 @@ let speedDiv = document.getElementsByTagName('h2')[0];
 loadWASM()
   .then(cMath => {
     m = cMath;
+}).catch((obj) => {
+  jsFallback();
+}).then(() => {
     window.onload = (() => { 
       createStats();
       addButtons();
       graphStats();
-      draw();
-      draw2(); 
     })();
 });
 
@@ -20,28 +21,29 @@ loadWASM()
 var vid = document.getElementById('v');
 var canvas = document.getElementById('c');
 var context = canvas.getContext('2d');
-vid.addEventListener("loadedmetadata", function() {
+vid.addEventListener("loadeddata", function() {
   canvas.setAttribute('height', vid.videoHeight);
   canvas.setAttribute('width', vid.videoWidth);
   cw = canvas.clientWidth; //usually same as canvas.height
   ch = canvas.clientHeight;
+  draw();
 });
 
 //javascript video
 var vid2 = document.getElementById('v2');
 var canvas2 = document.getElementById('c2');
 var context2 = canvas2.getContext('2d');
-vid2.addEventListener("loadedmetadata", function() {
+vid2.addEventListener("loadeddata", function() {
   canvas2.setAttribute('height', vid2.videoHeight);
   canvas2.setAttribute('width', vid2.videoWidth);
   cw2 = canvas.clientWidth; //usually same as canvas.height
   ch2 = canvas.clientHeight;
+  draw2();
 });
 
-// vid.addEventListener("play", draw);
-// setTimeout(draw, 1000); //hacky way to wait for module to load
 function draw() {
   context.drawImage(vid, 0, 0);
+  // console.log('check', vid, context);
   pixels = context.getImageData(0, 0, vid.videoWidth, vid.videoHeight);
   if (filter !== 'Normal') {
     t0 = performance.now();
@@ -53,7 +55,6 @@ function draw() {
 }
 
 //for javascript example
-// setTimeout(draw2, 1000); //hacky way to wait for module to load
 function draw2() {
   context2.drawImage(vid2, 0, 0);
   pixels2 = context2.getImageData(0, 0, vid2.videoWidth, vid2.videoHeight);
@@ -74,7 +75,7 @@ function graphStats () {
   perfStr1 = perf1.toString().slice(0, 4);
   perfStr2 = perf2.toString().slice(0, 5);
   wasmStats = `WASM computation time: ${perfStr1} ms`;
-  jsStats = `JS computation time: ${perfStr2} ms`;
+  jsStats = ` JS computation time: ${perfStr2} ms`;
   document.getElementById("stats").textContent = wasmStats + jsStats;
   line1.append(new Date().getTime(), 1000 / perf1);
   line2.append(new Date().getTime(), 1000 / perf2);
@@ -143,7 +144,7 @@ function setPixels (filter, language) {
   if (language === 'wasm') {
     let kernel, divisor;
     switch (filter) {
-      case 'Grayscale': pixels.data.set(m.greyScale(pixels.data)); break;
+      case 'Grayscale': pixels.data.set(m.grayScale(pixels.data)); break;
       case 'Brighten': pixels.data.set(m.brighten(pixels.data)); break;
       case 'Invert': pixels.data.set(m.invert(pixels.data)); break;
       case 'Noise': pixels.data.set(m.noise(pixels.data)); break;
@@ -169,7 +170,7 @@ function setPixels (filter, language) {
     }
   } else {
     switch (filter) {
-      case 'Grayscale': pixels2.data.set(jsGreyScale(pixels2.data)); break;
+      case 'Grayscale': pixels2.data.set(jsGrayScale(pixels2.data)); break;
       case 'Brighten': pixels2.data.set(jsBrighten(pixels2.data)); break;
       case 'Invert': pixels2.data.set(jsInvert(pixels2.data)); break;
       case 'Noise': pixels2.data.set(jsNoise(pixels2.data)); break;
@@ -179,4 +180,15 @@ function setPixels (filter, language) {
       case 'Super Edge': pixels2.data.set(jsConvFilter(pixels2.data, vid2.videoHeight, vid2.videoWidth)); break;
     }
   }
+}
+
+function jsFallback() {
+  m['grayScale'] = jsGrayScale;
+  m['brighten'] = jsBrighten;
+  m['invert'] = jsInvert;
+  m['noise'] = jsNoise;
+  m['edgeManip'] = jsEdgeManip;
+  m['edgeManip'] = jsEdgeManip;
+  m['edgeManip'] = jsEdgeManip;
+  m['convFilt'] = jsConvFilter;
 }

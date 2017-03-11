@@ -1,4 +1,4 @@
-function jsGreyScale(data) {
+function jsGrayScale(data) {
     for (let i = 0; i < data.length; i += 4) {
       let r = data[i];
       let g = data[i+1];
