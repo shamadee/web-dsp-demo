@@ -1,17 +1,20 @@
 let m;
-loadWASM()
-  .then(cMath => {
-    m = cMath;
-    //window.onload = initVideo('media/vid.mp4', m);
-});
 let filter = 'Normal';
 let t0, t1 = Infinity, t2, t3 = Infinity, line1, line2, perf1, perf2, perfStr1, perfStr2, wasmStats, jsStats, percent;
 let pixels, pixels2;
 let cw, cw2, ch, ch2;
 let speedDiv = document.getElementsByTagName('h2')[0];
-createStats();
-addButtons();
-graphStats();
+loadWASM()
+  .then(cMath => {
+    m = cMath;
+    window.onload = (() => { 
+      createStats();
+      addButtons();
+      graphStats();
+      draw();
+      draw2(); 
+    })();
+});
 
 //wasm video
 var vid = document.getElementById('v');
@@ -36,7 +39,7 @@ vid2.addEventListener("loadedmetadata", function() {
 });
 
 // vid.addEventListener("play", draw);
-setTimeout(draw, 1000); //hacky way to wait for module to load
+// setTimeout(draw, 1000); //hacky way to wait for module to load
 function draw() {
   context.drawImage(vid, 0, 0);
   pixels = context.getImageData(0, 0, vid.videoWidth, vid.videoHeight);
@@ -50,7 +53,7 @@ function draw() {
 }
 
 //for javascript example
-setTimeout(draw2, 1000); //hacky way to wait for module to load
+// setTimeout(draw2, 1000); //hacky way to wait for module to load
 function draw2() {
   context2.drawImage(vid2, 0, 0);
   pixels2 = context2.getImageData(0, 0, vid2.videoWidth, vid2.videoHeight);
@@ -137,23 +140,26 @@ function addButtons (filtersArr) {
 
 function setPixels (filter, language) {
   if (language === 'wasm') {
-    if (filter === 'Grayscale') pixels.data.set(m.greyScale(pixels.data));
-    if (filter === 'Brighten') pixels.data.set(m.brighten(pixels.data));
-    if (filter === 'Invert') pixels.data.set(m.invert(pixels.data));
-    if (filter === 'Noise') pixels.data.set(m.noise(pixels.data));
-    if (filter === 'Sunset') pixels.data.set(m.edgeManip(pixels.data, 4, cw)); //red cyan
-    if (filter === 'Analog TV') pixels.data.set(m.edgeManip(pixels.data, 7, cw)); //dots
-    if (filter === 'Emboss') pixels.data.set(m.edgeManip(pixels.data, 1, cw)); //emboss
-    if (filter === 'Super Edge') pixels.data.set(m.convFilt(pixels.data, 720, 486));
-  }
-  if (language === 'js') {
-    if (filter === 'Grayscale') pixels2.data.set(jsGreyScale(pixels2.data));
-    if (filter === 'Brighten') pixels2.data.set(jsBrighten(pixels2.data));
-    if (filter === 'Invert') pixels2.data.set(jsInvert(pixels2.data));
-    if (filter === 'Noise') pixels2.data.set(jsNoise(pixels2.data));
-    if (filter === 'Sunset') pixels2.data.set(jsEdgeManip(pixels2.data, 4, cw2));
-    if (filter === 'Analog TV') pixels2.data.set(jsEdgeManip(pixels2.data, 7, cw2));
-    if (filter === 'Emboss') pixels2.data.set(jsEdgeManip(pixels2.data, 1, cw2));
-    if (filter === 'Super Edge') pixels2.data.set(jsConvFilter(pixels2.data));
+    switch (filter) {
+      case 'Grayscale': pixels.data.set(m.greyScale(pixels.data)); break;
+      case 'Brighten': pixels.data.set(m.brighten(pixels.data)); break;
+      case 'Invert': pixels.data.set(m.invert(pixels.data)); break;
+      case 'Noise': pixels.data.set(m.noise(pixels.data)); break;
+      case 'Sunset': pixels.data.set(m.edgeManip(pixels.data, 4, cw)); break;
+      case 'Analog TV': pixels.data.set(m.edgeManip(pixels.data, 7, cw)); break;
+      case 'Emboss': pixels.data.set(m.edgeManip(pixels.data, 1, cw)); break;
+      case 'Super Edge': pixels.data.set(m.convFilt(pixels.data, 720, 486)); break;
+    }
+  } else {
+    switch (filter) {
+      case 'Grayscale': pixels2.data.set(jsGreyScale(pixels2.data)); break;
+      case 'Brighten': pixels2.data.set(jsBrighten(pixels2.data)); break;
+      case 'Invert': pixels2.data.set(jsInvert(pixels2.data)); break;
+      case 'Noise': pixels2.data.set(jsNoise(pixels2.data)); break;
+      case 'Sunset': pixels2.data.set(jsEdgeManip(pixels2.data, 4, cw2)); break;
+      case 'Analog TV': pixels2.data.set(jsEdgeManip(pixels2.data, 7, cw2)); break;
+      case 'Emboss': pixels2.data.set(jsEdgeManip(pixels2.data, 1, cw2)); break;
+      case 'Super Edge': pixels2.data.set(jsConvFilter(pixels2.data)); break;
+    }
   }
 }
