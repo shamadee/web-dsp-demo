@@ -20,8 +20,6 @@ function initVideo(fName, module, width=window.innerWidth-100, height=window.inn
   vid.src = fName;
   vid.autoplay = true;
   vid.loop = true;
-
-
   vid.addEventListener("loadedmetadata", vidLoaded, false);
 }
 
@@ -119,6 +117,45 @@ function createStats() {
 function loop() {
   animation = requestAnimationFrame(() => { loop(); });
   pixels = getPixels();
+
+  let kernel = [0, 0, 0,
+                0, 0, 0,
+                0, 0, 0];
+
+  const kernelBright = [ 0, 1, 0, 
+                        -1, 5, 1, 
+                         0, 1,12];
+
+  const kernelIdentity = [-1, -1, -1, 
+                          -1,  8, -1, 
+                          -1, -1, -1];
+  
+  const kH = [-1, -2, -1, 
+               0,  0,  0, 
+               1,  2,  1];
+
+  const kernelSoft = [1, 1, 1, 
+                    1, 1, 1, 
+                    1, 1, 1];
+  kernel = [0, -1, 0, 
+            -1, 5, -1, 
+            0, -1, 0];
+
+  
+  kernel = [ 1,0,-1, 
+             2,0,-2, 
+             1,0,-1];
+
+  kernel = [-2, -1, 0,
+            -1,  1, 1,
+             0,  1, 2]
+
+  let divisor = kernel.reduce((a, b) => a + b, 0) || 1;
+
+
+  // pixels.data.set(m.greyScale(pixels.data, pixels.data.length));
+  // pixels.data.set(m.gaussFilt(pixels.data, kernel, divisor, 720, 486));
+
   t0 = performance.now();
   //write switch case - button will change a var and based on that var it will trigger one of these
 
@@ -130,6 +167,7 @@ function loop() {
   if (filter === 'Analog TV') pixels.data.set(m.edgeManip(pixels.data, 7, canv2Width)); //dots
   if (filter === 'Emboss') pixels.data.set(m.edgeManip(pixels.data, 1, canv2Width)); //emboss
   if (filter === 'Super Edge') pixels.data.set(m.convFilt(pixels.data, 720, 486));
+
   t1 = performance.now();
   t2 = performance.now();
   // jsData = convFilter(pixels.data);
