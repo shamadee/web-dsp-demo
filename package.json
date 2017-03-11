@@ -4,8 +4,9 @@
   "description": "This is a sample library using WebAssembly. To compile the C library download emscripten and run in terminal:",
   "main": "test.js",
   "scripts": {
-    "test": "g++ ./test/test.cpp -o ./test/testCpp && ./test/testCpp",
+    "test": "npm run testCPP && npm run testJS",
     "testCPP": "g++ ./test/test.cpp -o ./test/testCpp && ./test/testCpp",
+    "testJS": "mocha || true",
     "start": "gulp",
     "cpp": "echo \"compiling C/C++ to WASM\" && . ./compileWASM.sh"
   },
@@ -26,7 +27,10 @@
   },
   "devDependencies": {
     "browser-sync": "^2.18.8",
+    "chai": "^3.5.0",
     "gulp": "^3.9.1",
-    "gulp-livereload": "^3.8.1"
+    "gulp-livereload": "^3.8.1",
+    "mocha": "^3.2.0",
+    "zombie": "^5.0.5"
   }
 }
