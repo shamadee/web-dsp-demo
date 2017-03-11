@@ -1,13 +1,29 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <script type="text/javascript" src="smoothie.js"></script>
-  <script src='wasmMath.js'></script>
-  <script src='test.js'></script>
   <link rel="Stylesheet" href="style.css" type="text/css">
 </head>
 <body>
   <h1>WASM Example</h1>
+  <canvas id="c" width="640" height="360"></canvas>
+  <video id="v" controls="" preload = "auto" loop="" autoplay="" style="display:none;"> 
+	<source src="media/vid.mp4" type="video/mp4"/> 
+  </video>
+  <div id = "statsContainer">
+  <h2>Speed Stats</h2>
+  <div id = "stats">Loading..</div>
+  <h3>Frame Rate. WASM = Green; JS = Blue;</h3>
+  <canvas id = "statsCanvas"></canvas>
+  </div>
+  <h1>JS Example</h1>
+  <canvas id="c2" width="640" height="360"></canvas>
+  <video id="v2" controls="" preload = "auto" loop="" autoplay="" style="display:none;"> 
+	<source src="media/vid.mp4" type="video/mp4"/> 
+  </video>
+  <script type="text/javascript" src="smoothie.js"></script>
+  <script src='wasmMath.js'></script>
+  <script src='jsFilters.js'></script>
+  <script src='demo2.js'></script>
 </body>
 </html>
 

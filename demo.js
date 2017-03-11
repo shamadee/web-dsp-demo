@@ -1,9 +1,10 @@
 let m;
+let filter = 'Normal';
 loadWASM()
   .then(cMath => {
     m = cMath;
     window.onload = initVideo('media/vid.mp4', m);
-  });
+});
 
 let canv, ctx, canv2, ctx2, ratio, winWidth, winHeight, vid, vHeight, c2Width, c2Height, animation, pixels;
 let mem, len;
@@ -19,8 +20,6 @@ function initVideo(fName, module, width=window.innerWidth-100, height=window.inn
   vid.src = fName;
   vid.autoplay = true;
   vid.loop = true;
-  // vid.playbackRate = 0.00001;
-  
   vid.addEventListener("loadedmetadata", vidLoaded, false);
 }
 
@@ -32,13 +31,9 @@ function vidLoaded() {
   vHeight = winWidth * ratio;
   vid.width = winWidth;
   vid.height = winHeight;
-
-  createStats();
   createCanvas();
-  
-  callManipArr();
-  jsManipArr();
-  singleManip();
+  createStats();
+  addButtons();
 }
 
 function createCanvas() {
@@ -122,43 +117,58 @@ function createStats() {
 function loop() {
   animation = requestAnimationFrame(() => { loop(); });
   pixels = getPixels();
-  // console.log('pixel data', pixels.data);
-  // console.log('greyscale', m.greyScale(pixels.data));
-  // const kernel = [0, 0, 0, 0, 0, 0, 0, 0, 0];
-  const kernelBright = [ 0, 1,  0, 
-                  -1,  5, 1, 
-                   0, 1,  12];
 
-  let kernel = [0, -1, 0, 
-                  -1, 5, -1, 
-                  0, -1, 0];
-  let kernelSoft = [1, 1, 1, 
-                    1, 1, 1, 
-                    1, 1, 1];
-  
-  // kernel = [ 1,0,-1, 
-  //            2,0,-2, 
-  //            1,0,-1];
+  let kernel = [0, 0, 0,
+                0, 0, 0,
+                0, 0, 0];
 
-  // kernel = [-2, -1, 0,
-  //           -1,  1, 1,
-  //            0,  1, 2]
-
-  let divisor = kernel.reduce((a, b) => a + b, 0) || 1;
+  const kernelBright = [ 0, 1, 0, 
+                        -1, 5, 1, 
+                         0, 1,12];
 
   const kernelIdentity = [-1, -1, -1, 
                           -1,  8, -1, 
                           -1, -1, -1];
   
-  const kH = [-1, -2, -1, 0, 0, 0, 1, 2, 1];
+  const kH = [-1, -2, -1, 
+               0,  0,  0, 
+               1,  2,  1];
+
+  const kernelSoft = [1, 1, 1, 
+                    1, 1, 1, 
+                    1, 1, 1];
+  kernel = [0, -1, 0, 
+            -1, 5, -1, 
+            0, -1, 0];
+
+  
+  kernel = [ 1,0,-1, 
+             2,0,-2, 
+             1,0,-1];
+
+  kernel = [-2, -1, 0,
+            -1,  1, 1,
+             0,  1, 2]
+
+  let divisor = kernel.reduce((a, b) => a + b, 0) || 1;
+
+
+  // pixels.data.set(m.greyScale(pixels.data, pixels.data.length));
+  // pixels.data.set(m.gaussFilt(pixels.data, kernel, divisor, 720, 486));
 
   t0 = performance.now();
-  // pixels.data.set(m.convFilt(pixels.data, 720, 486));
-  pixels.data.set(m.greyScale(pixels.data, pixels.data.length));
-  pixels.data.set(m.gaussFilt(pixels.data, kernel, divisor, 720, 486));
-  // m.gaussFilt(pixels.data, kernel, 720, 486)
+  //write switch case - button will change a var and based on that var it will trigger one of these
+
+  if (filter === 'Grayscale') pixels.data.set(m.greyScale(pixels.data));
+  if (filter === 'Brighten') pixels.data.set(m.brighten(pixels.data));
+  if (filter === 'Invert') pixels.data.set(m.invert(pixels.data));
+  if (filter === 'Noise') pixels.data.set(m.noise(pixels.data));
+  if (filter === 'Sunset') pixels.data.set(m.edgeManip(pixels.data, 4, canv2Width)); //red cyan
+  if (filter === 'Analog TV') pixels.data.set(m.edgeManip(pixels.data, 7, canv2Width)); //dots
+  if (filter === 'Emboss') pixels.data.set(m.edgeManip(pixels.data, 1, canv2Width)); //emboss
+  if (filter === 'Super Edge') pixels.data.set(m.convFilt(pixels.data, 720, 486));
+
   t1 = performance.now();
-  
   t2 = performance.now();
   // jsData = convFilter(pixels.data);
   // pixels.data.set(jsData);
@@ -191,6 +201,9 @@ function getPixels() {
   return ctx2.getImageData(0, 0, canv2Width, canv2Height);
 }
 
+
+//Javascript Filters
+
 function jsGreyScale(data) {
     for (let i = 0; i < data.length; i += 4) {
       let r = data[i];
@@ -205,43 +218,6 @@ function jsGreyScale(data) {
       data[i+3] = a;
     }
     return data;
-}
-
-function callManipArr() {
-  const arr = [...Array(arrLen).keys()];
-  mem = _malloc(arr.length);
-  let tA = performance.now();
-  HEAPU8.set(arr, mem);
-  m.manipArr(mem, arr.length);
-  let tB = performance.now();
-  _free(mem);
-  console.log('wasm took ', tB - tA, ' ms');
-}
-
-function jsManipArr() {
-  const arr = [...Array(arrLen).keys()];
-  let tA = performance.now();
-  jsArr(arr);
-  let tB = performance.now();
-  console.log('js took ', tB - tA, ' ms');
-}
-
-function jsArr(arr) {
-  for (let i = 0; i < arr.length; i++) {
-    // arr[i] = Math.sqrt(arr[i]);
-    arr[i] = arr[i] * arr[i];
-  }
-}
-
-function singleManip() {
-  const arr = [...Array(arrLen).keys()];
-  let tA = performance.now();
-  let len = arr.length;
-  for (let i = 0; i < len; i++) {
-    arr[i] = m.manipSingle(arr[i]);
-  }
-  let tB = performance.now();
-  console.log('single took ', tB - tA, ' ms');
 }
 
 function convFilter(data, height=486, width=720) {
@@ -311,3 +287,55 @@ function convFilter(data, height=486, width=720) {
     return data; //sobelData;
 }
 
+function addButtons (filtersArr) {
+  let filters = ['Normal', 'Grayscale', 'Brighten', 'Invert', 'Noise', 'Sunset', 'Analog TV', 'Emboss', 'Super Edge']
+  let buttonDiv = document.createElement('div');
+  buttonDiv.id = 'buttons';
+  document.body.appendChild(buttonDiv);
+  for (let i = 0; i < filters.length; i++) {
+    let button = document.createElement('button');
+    button.innerText = filters[i];
+    button.addEventListener('click', () => filter = filters[i]);
+    buttonDiv.appendChild(button);
+  }
+}
+
+/* stuff that's not filters 
+
+function callManipArr() {
+  const arr = [...Array(arrLen).keys()];
+  mem = _malloc(arr.length);
+  let tA = performance.now();
+  HEAPU8.set(arr, mem);
+  m.manipArr(mem, arr.length);
+  let tB = performance.now();
+  _free(mem);
+  console.log('wasm took ', tB - tA, ' ms');
+}
+
+function jsManipArr() {
+  const arr = [...Array(arrLen).keys()];
+  let tA = performance.now();
+  jsArr(arr);
+  let tB = performance.now();
+  console.log('js took ', tB - tA, ' ms');
+}
+
+function jsArr(arr) {
+  for (let i = 0; i < arr.length; i++) {
+    // arr[i] = Math.sqrt(arr[i]);
+    arr[i] = arr[i] * arr[i];
+  }
+}
+
+function singleManip() {
+  const arr = [...Array(arrLen).keys()];
+  let tA = performance.now();
+  let len = arr.length;
+  for (let i = 0; i < len; i++) {
+    arr[i] = m.manipSingle(arr[i]);
+  }
+  let tB = performance.now();
+  console.log('single took ', tB - tA, ' ms');
+}
+*/

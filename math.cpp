@@ -1,4 +1,5 @@
 #include <math.h>
+#include <stdlib.h>
 #include <stdio.h>
 
 extern "C" {
@@ -12,29 +13,16 @@ extern "C" {
   }
 
   void manipArr(unsigned char* data, int len) {
-    // for (int i = 0; i < len; i += 4) {
-    //   int r = data[i];
-    //   int g = data[i+1];
-    //   int b = data[i+2];
-    //   int a = data[i+3];
-    //   int brightness = (r*.21+g*.72+b*.07);
-
-    //   data[i] = 0;
-    //   data[i+1] = g;
-    //   data[i+2] = b;
-    //   data[i+3] = a;
-    // }
-
     for (int i = 0; i < len; i++) {
-      // data[i] = static_cast<int>sqrt(data[i]);
       data[i] = data[i] * data[i];
     }
   }
 
   float manipSingle(int a) {
-    // return sqrt(a);
     return a * a;
   }
+
+//start filters below
 
   void greyScale(unsigned char* data, int len) {
     for (int i = 0; i < len; i += 4) {
@@ -44,13 +32,47 @@ extern "C" {
       int a = data[i+3];
       int brightness = (r*.21+g*.72+b*.07);
 
-      data[i] = brightness;
-      data[i+1] = brightness;
-      data[i+2] = brightness;
+      data[i] = r;
+      data[i+1] = r;
+      data[i+2] = r;
       data[i+3] = a;
     }
   }
   
+  void brighten(unsigned char* data, int len) {
+    int brightness = 25;
+    for (int i = 0; i < len; i += 4) {
+      data[i] + data[i] + brightness > 255 ? 255 : data[i] += brightness;
+      data[i+1] + data[i+1] + brightness > 255 ? 255 : data[i+1] += brightness;
+      data[i+2] + data[i+2] + brightness > 255 ? 255 : data[i+2] += brightness;
+    }
+  }
+
+  void invert(unsigned char* data, int len) {
+    for (int i = 0; i < len; i += 4) {
+      data[i] = 255 - data[i]; //r
+      data[i+1] = 255 - data[i+1]; //g
+      data[i+2] = 255 - data[i+2]; //b
+    }
+  }
+
+  void noise (unsigned char* data, int len) {
+    int random; 
+    for (int i = 0; i < len; i += 4) {
+      random = (rand() % 70) - 35;
+      data[i] = data[i] + random; //r
+      data[i+1] = data[i+1] + random; //g
+      data[i+2] = data[i+2] + random; //b
+    }
+  }
+  void edgeManip (unsigned char* data, int len, int filt, int c2Width) {
+    for (int i = 0; i < len; i += filt) {
+      if (i % 4 != 3) {
+        data[i] = 127 + 2 * data[i] - data[i + 4] - data[i + c2Width * 4];
+      }
+    }
+  }
+
   const int WIDTH = 720;
   const int HEIGHT = 486;
   int grayData[WIDTH * HEIGHT];
@@ -61,39 +83,6 @@ extern "C" {
     return (arr[((WIDTH * y) + x)]);
   }
   void gaussFilter(float* data, int width, int height, float* kern, int Ks, double divisor, double offset) {
-    // unsigned int ix, iy, il;
-    // int kx, ky;
-    // float cp[3];
-
-    // for (ix = 1; ix < width - 1; ix += 1) {
-    //   for (iy = 1; iy < height - 1; iy += 1) {
-    //     cp[0] = cp[1] = cp[2] = 0.0;
-    //     for (kx = -Ks; kx <= Ks; kx++) {
-    //       for (ky = -Ks; ky <= Ks; ky++) {
-    //         for (il = 0; il < 3; il++) {
-    //           // cp[il] += ( kern[(kx + Ks) + (ky + Ks) * (2 * Ks + 1)] / divisor )
-    //           //           * ( data[((WIDTH * (iy + ky) + (ix + kx))) + il] );
-
-    //           cp[il] += ( kern[(kx + Ks) + (2 * Ks + 1) * (ky + Ks)] / divisor ) * 
-    //                     ( data[((WIDTH * (iy + ky)) + (ix+kx)) * 4 + il]);
-
-    //         }
-    //       }
-
-    //       data[((WIDTH * iy + ix) << 2) + 0] = cp[0];
-    //       data[((WIDTH * iy + ix) << 2) + 1] = cp[1];
-    //       data[((WIDTH * iy + ix) << 2) + 2] = cp[2];
-        
-    //     // for (il = 0; il < 3; il++) {
-    //     //   cp[il] = (cp[il]>255.0) ? 255.0 : ((cp[il]<0.0) ? 0.0 : cp[il]);
-    //     //   data[(WIDTH * iy + ix) + il] = cp[il];
-    //       // data[((WIDTH * (iy + ky) + (ix + kx)) << 2) + il] = 5;
-    //     }
-    //   }
-    // }
-    // for (int i = 0; i < dataLen; i++) {
-    //   data[i] = data[i] * kern[i % 9];
-    // }
 
     for (int y = 50; y < height - 50; y++) {
       for (int x = 50; x < width - 50; x++) {
@@ -151,66 +140,96 @@ extern "C" {
         data[offsetC + 0] = (data[offsetC + 0]>255.0) ? 255.0 : ((data[offsetC + 0]<0.0) ? 0.0 : data[offsetC + 0]);
         data[offsetC + 1] = (data[offsetC + 1]>255.0) ? 255.0 : ((data[offsetC + 1]<0.0) ? 0.0 : data[offsetC + 1]);
         data[offsetC + 2] = (data[offsetC + 2]>255.0) ? 255.0 : ((data[offsetC + 2]<0.0) ? 0.0 : data[offsetC + 2]);
+// unsigned int ix, iy, il;
+// int kx, ky;
+// float cp[3];
+
+// for (ix = 1; ix < width - 1; ix += 1) {
+//   for (iy = 1; iy < height - 1; iy += 1) {
+//     cp[0] = cp[1] = cp[2] = 0.0;
+//     for (kx = -Ks; kx <= Ks; kx++) {
+//       for (ky = -Ks; ky <= Ks; ky++) {
+//         for (il = 0; il < 3; il++) {
+//           // cp[il] += ( kern[(kx + Ks) + (ky + Ks) * (2 * Ks + 1)] / divisor )
+//           //           * ( data[((WIDTH * (iy + ky) + (ix + kx))) + il] );
+
+//           cp[il] += ( kern[(kx + Ks) + (2 * Ks + 1) * (ky + Ks)] / divisor ) * 
+//                     ( data[((WIDTH * (iy + ky)) + (ix+kx)) * 4 + il]);
+
+//         }
+//       }
+
+//       data[((WIDTH * iy + ix) << 2) + 0] = cp[0];
+//       data[((WIDTH * iy + ix) << 2) + 1] = cp[1];
+//       data[((WIDTH * iy + ix) << 2) + 2] = cp[2];
+    
+//     // for (il = 0; il < 3; il++) {
+//     //   cp[il] = (cp[il]>255.0) ? 255.0 : ((cp[il]<0.0) ? 0.0 : cp[il]);
+//     //   data[(WIDTH * iy + ix) + il] = cp[il];
+//       // data[((WIDTH * (iy + ky) + (ix + kx)) << 2) + il] = 5;
+//     }
+//   }
+// }
+// for (int i = 0; i < dataLen; i++) {
+//   data[i] = data[i] * kern[i % 9];
+// }
       }
     }
   }
 
   void convFilter(unsigned char* data, int width, int height) {
-      for (int y = 0; y < height; y++) {
-        for (int x = 0; x < width; x++) {
-            int goffset = ((WIDTH * y) + x) << 2; //multiply by 4
-            int r = data[goffset];
-            int g = data[goffset + 1];
-            int b = data[goffset + 2];
+    for (int y = 0; y < height; y++) {
+      for (int x = 0; x < width; x++) {
+        int goffset = ((WIDTH * y) + x) << 2; //multiply by 4
+        int r = data[goffset];
+        int g = data[goffset + 1];
+        int b = data[goffset + 2];
 
-            int avg = (r >> 2) + (g >> 1) + (b >> 3);
-            grayData[((WIDTH * y) + x)] = avg;
+        int avg = (r >> 2) + (g >> 1) + (b >> 3);
+        grayData[((WIDTH * y) + x)] = avg;
 
-            int doffset = ((WIDTH * y) + x) << 2;
-            data[doffset] = avg;
-            data[doffset + 1] = avg;
-            data[doffset + 2] = avg;
-            data[doffset + 3] = 255;
+        int doffset = ((WIDTH * y) + x) << 2;
+        data[doffset] = avg;
+        data[doffset + 1] = avg;
+        data[doffset + 2] = avg;
+        data[doffset + 3] = 255;
 
-        }
+      }
     }
 
     for (int y = 0; y < height; y++) {
-        for (int x = 0; x < width; x++) {
-            int newX;
-            int newY;
-            if ((x <= 0 || x >= width - 1) || (y <= 0 || y >= height - 1)) {
-                newX = 0;
-                newY = 0;
-            } else {
-                newX = (
-                    (-1 * getPixel(x - 1, y - 1, grayData)) +
-                    (getPixel(x + 1, y - 1, grayData)) +
-                    (-1 * (getPixel(x - 1, y, grayData) << 1)) +
-                    (getPixel(x + 1, y, grayData) << 1) +
-                    (-1 * getPixel(x - 1, y + 1, grayData)) +
-                    (getPixel(x + 1, y + 1, grayData))
-                );
-                newY = (
-                    (-1 * getPixel(x - 1, y - 1, grayData)) +
-                    (-1 * (getPixel(x, y - 1, grayData) << 1)) +
-                    (-1 * getPixel(x + 1, y - 1, grayData)) +
-                    (getPixel(x - 1, y + 1, grayData)) +
-                    (getPixel(x, y + 1, grayData) << 1) +
-                    (getPixel(x + 1, y + 1, grayData))
-                );
-            }
-            int mag = sqrt((newX * newX) + (newY * newY));
-            if (mag > 255) mag = 255;
-            int offset = ((WIDTH * y) + x) << 2; //multiply by 4
-            data[offset] = 255 - mag;
-            data[offset + 1] = 255 - mag;
-            data[offset + 2] = 255 - mag;
-            data[offset + 3] = 255;
+      for (int x = 0; x < width; x++) {
+        int newX;
+        int newY;
+        if ((x <= 0 || x >= width - 1) || (y <= 0 || y >= height - 1)) {
+          newX = 0;
+          newY = 0;
+        } else {
+          newX = (
+            (-1 * getPixel(x - 1, y - 1, grayData)) +
+            (getPixel(x + 1, y - 1, grayData)) +
+            (-1 * (getPixel(x - 1, y, grayData) << 1)) +
+            (getPixel(x + 1, y, grayData) << 1) +
+            (-1 * getPixel(x - 1, y + 1, grayData)) +
+            (getPixel(x + 1, y + 1, grayData))
+          );
+          newY = (
+            (-1 * getPixel(x - 1, y - 1, grayData)) +
+            (-1 * (getPixel(x, y - 1, grayData) << 1)) +
+            (-1 * getPixel(x + 1, y - 1, grayData)) +
+            (getPixel(x - 1, y + 1, grayData)) +
+            (getPixel(x, y + 1, grayData) << 1) +
+            (getPixel(x + 1, y + 1, grayData))
+          );
         }
+        int mag = sqrt((newX * newX) + (newY * newY));
+        if (mag > 255) mag = 255;
+        int offset = ((WIDTH * y) + x) << 2; //multiply by 4
+        data[offset] = 255 - mag;
+        data[offset + 1] = 255 - mag;
+        data[offset + 2] = 255 - mag;
+        data[offset + 3] = 255;
       }
+    }
   }
-
-
-
 }
