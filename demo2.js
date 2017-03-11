@@ -1,17 +1,20 @@
 let m;
-loadWASM()
-  .then(cMath => {
-    m = cMath;
-    //window.onload = initVideo('media/vid.mp4', m);
-});
 let filter = 'Normal';
 let t0, t1 = Infinity, t2, t3 = Infinity, line1, line2, perf1, perf2, perfStr1, perfStr2, wasmStats, jsStats, percent;
 let pixels, pixels2;
 let cw, cw2, ch, ch2;
 let speedDiv = document.getElementsByTagName('h2')[0];
-createStats();
-addButtons();
-graphStats();
+loadWASM()
+  .then(cMath => {
+    m = cMath;
+    window.onload = (() => { 
+      createStats();
+      addButtons();
+      graphStats();
+      draw();
+      draw2(); 
+    })();
+});
 
 //wasm video
 var vid = document.getElementById('v');
@@ -36,7 +39,7 @@ vid2.addEventListener("loadedmetadata", function() {
 });
 
 // vid.addEventListener("play", draw);
-setTimeout(draw, 1000); //hacky way to wait for module to load
+// setTimeout(draw, 1000); //hacky way to wait for module to load
 function draw() {
   context.drawImage(vid, 0, 0);
   pixels = context.getImageData(0, 0, vid.videoWidth, vid.videoHeight);
@@ -50,7 +53,7 @@ function draw() {
 }
 
 //for javascript example
-setTimeout(draw2, 1000); //hacky way to wait for module to load
+// setTimeout(draw2, 1000); //hacky way to wait for module to load
 function draw2() {
   context2.drawImage(vid2, 0, 0);
   pixels2 = context2.getImageData(0, 0, vid2.videoWidth, vid2.videoHeight);
