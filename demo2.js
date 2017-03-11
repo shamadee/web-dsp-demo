@@ -126,7 +126,8 @@ function createStats() {
 }
 
 function addButtons (filtersArr) {
-  let filters = ['Normal', 'Grayscale', 'Brighten', 'Invert', 'Noise', 'Sunset', 'Analog TV', 'Emboss', 'Super Edge']
+  let filters = ['Normal', 'Grayscale', 'Brighten', 'Invert', 'Noise', 'Sunset', 
+                 'Analog TV', 'Emboss', 'Super Edge', 'Gaussian Blur', 'Sharpen', 'Sharpen2']
   let buttonDiv = document.createElement('div');
   buttonDiv.id = 'buttons';
   document.body.appendChild(buttonDiv);
@@ -140,6 +141,7 @@ function addButtons (filtersArr) {
 
 function setPixels (filter, language) {
   if (language === 'wasm') {
+    let kernel, divisor;
     switch (filter) {
       case 'Grayscale': pixels.data.set(m.greyScale(pixels.data)); break;
       case 'Brighten': pixels.data.set(m.brighten(pixels.data)); break;
@@ -148,7 +150,22 @@ function setPixels (filter, language) {
       case 'Sunset': pixels.data.set(m.edgeManip(pixels.data, 4, cw)); break;
       case 'Analog TV': pixels.data.set(m.edgeManip(pixels.data, 7, cw)); break;
       case 'Emboss': pixels.data.set(m.edgeManip(pixels.data, 1, cw)); break;
-      case 'Super Edge': pixels.data.set(m.convFilt(pixels.data, 720, 486)); break;
+      case 'Super Edge': pixels.data.set(m.sobelFilter(pixels.data, vid.videoWidth, vid.videoHeight)); break;
+      case 'Gaussian Blur':
+        kernel = [1, 1, 1, 1, 1, 1, 1, 1, 1];
+        divisor = kernel.reduce((a, b) => a + b, 0) || 1;
+        pixels.data.set(m.convFilter(pixels.data, kernel, 3, divisor, vid.videoWidth, vid.videoHeight)); 
+        break;
+      case 'Sharpen':
+        kernel = [-1, -1, -1, -1,  8, -1, -1, -1, -1];
+        divisor = kernel.reduce((a, b) => a + b, 0) || 1;
+        pixels.data.set(m.convFilter(pixels.data, kernel, 1, divisor, vid.videoWidth, vid.videoHeight)); 
+        break;
+      case 'Sharpen2':
+        kernel = [0, -1, 0, -1, 5, -1, 0, -1, 0];
+        divisor = kernel.reduce((a, b) => a + b, 0) || 1;
+        pixels.data.set(m.convFilter(pixels.data, kernel, 1, 1.99, vid.videoWidth, vid.videoHeight)); 
+        break;      
     }
   } else {
     switch (filter) {
@@ -159,7 +176,7 @@ function setPixels (filter, language) {
       case 'Sunset': pixels2.data.set(jsEdgeManip(pixels2.data, 4, cw2)); break;
       case 'Analog TV': pixels2.data.set(jsEdgeManip(pixels2.data, 7, cw2)); break;
       case 'Emboss': pixels2.data.set(jsEdgeManip(pixels2.data, 1, cw2)); break;
-      case 'Super Edge': pixels2.data.set(jsConvFilter(pixels2.data)); break;
+      case 'Super Edge': pixels2.data.set(jsConvFilter(pixels2.data, vid2.videoHeight, vid2.videoWidth)); break;
     }
   }
 }

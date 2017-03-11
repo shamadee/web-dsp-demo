@@ -53,7 +53,7 @@ function jsEdgeManip(data, filt, wid) {
   return data;
 }
 
-function jsConvFilter(data, height=486, width=720) {
+function jsConvFilter(data, height, width) {
   const out = [];
   let wid = width;
   let hei = height;
