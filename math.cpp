@@ -24,7 +24,7 @@ extern "C" {
 
 //start filters below
 
-  void greyScale(unsigned char* data, int len) {
+  void grayScale(unsigned char* data, int len) {
     for (int i = 0; i < len; i += 4) {
       int r = data[i];
       int g = data[i+1];

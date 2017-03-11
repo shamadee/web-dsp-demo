@@ -153,13 +153,13 @@ function loop() {
   let divisor = kernel.reduce((a, b) => a + b, 0) || 1;
 
 
-  // pixels.data.set(m.greyScale(pixels.data, pixels.data.length));
+  // pixels.data.set(m.grayScale(pixels.data, pixels.data.length));
   // pixels.data.set(m.gaussFilt(pixels.data, kernel, divisor, 720, 486));
 
   t0 = performance.now();
   //write switch case - button will change a var and based on that var it will trigger one of these
 
-  if (filter === 'Grayscale') pixels.data.set(m.greyScale(pixels.data));
+  if (filter === 'Grayscale') pixels.data.set(m.grayScale(pixels.data));
   if (filter === 'Brighten') pixels.data.set(m.brighten(pixels.data));
   if (filter === 'Invert') pixels.data.set(m.invert(pixels.data));
   if (filter === 'Noise') pixels.data.set(m.noise(pixels.data));
@@ -204,7 +204,7 @@ function getPixels() {
 
 //Javascript Filters
 
-function jsGreyScale(data) {
+function jsGrayScale(data) {
     for (let i = 0; i < data.length; i += 4) {
       let r = data[i];
       let g = data[i+1];

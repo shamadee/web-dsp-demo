@@ -3,7 +3,9 @@ function loadWASM () {
   const cMath = {};
   return new Promise((resolve, reject) => {
     fetch('cMath.wasm')
-        .then(response => response.arrayBuffer())
+        .then(response => {
+          return response.arrayBuffer();
+        })
         .then(buffer => {
             Module.wasmBinary = buffer;
 
@@ -11,23 +13,23 @@ function loadWASM () {
             script.src = 'cMath.js';
 
             script.onload = function () {
+              if (!WebAssembly.instantiate) {
+                console.log('couldnt load WASM');
+                let newObj = { test: "this is working" };
+                reject(newObj);
+              }
               console.log('Emscripten boilerplate loaded.');
-              // cMath['double'] = Module.cwrap('doubler', 'number', ['number']);
-              // cMath['fib'] = Module.cwrap('fib', 'number', ['number']);
-              // cMath['manipArr'] = Module.cwrap('manipArr', null, ['number', 'number']);
-              cMath['manipArr'] = Module.cwrap('manipArr', null, ['number', 'number']);
-              cMath['manipSingle'] = Module.cwrap('manipSingle', 'number', ['number']);
               cMath['doubler'] = _doubler;
               cMath['fib'] = _fib;
 
               //filters
-              cMath['greyScale'] = function(array) {
+              cMath['grayScale'] = function(array) {
                 mem = _malloc(array.length);
                 HEAPU8.set(array, mem);
-                Module._greyScale(mem, array.length);
-                const greyScaled = HEAPU8.subarray(mem, mem + array.length);
+                Module._grayScale(mem, array.length);
+                const grayScaled = HEAPU8.subarray(mem, mem + array.length);
                 _free(mem);
-                return greyScaled;
+                return grayScaled;
               };
 
               cMath['convFilt'] = function(array, width, height) {
@@ -83,7 +85,6 @@ function loadWASM () {
                 _free(memKrn);
                 return filtered;
               }
-
               resolve(cMath);
             };
 
