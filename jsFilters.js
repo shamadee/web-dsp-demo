@@ -45,7 +45,12 @@ function jsNoise(data) {
 }
 
 function jsEdgeManip(data, filt, wid) {
-
+  for (let i = 0; i < data.length; i += filt) {
+      if (i % 4 != 3) {
+        data[i] = 127 + 2 * data[i] - data[i + 4] - data[i + wid * 4];
+      }
+    }
+  return data;
 }
 
 function jsConvFilter(data, height=486, width=720) {

@@ -4,8 +4,12 @@ loadWASM()
     m = cMath;
     //window.onload = initVideo('media/vid.mp4', m);
 });
+let filter = 'Normal';
+let t0, t1, t2, t3, line1, line2, perf1, perf2, perfStr1, perfStr2;
+createStats();
+addButtons();
+graphStats();
 
-let filter = 'Normal', animation, animation2, perf1, perf2, jsStats, wasmStats;
 //wasm video
 var vid = document.getElementById('v');
 var canvas = document.getElementById('c');
@@ -17,9 +21,6 @@ vid.addEventListener("loadedmetadata", function() {
   cw = canvas.clientWidth; //usually same as canvas.height
   ch = canvas.clientHeight;
 });
-
-createStats();
-addButtons();
 
 //javascript video
 var vid2 = document.getElementById('v2');
@@ -38,7 +39,7 @@ setTimeout(draw, 1000); //hacky way to wait for module to load
 function draw() {
   context.drawImage(vid, 0, 0);
   let pixels = context.getImageData(0, 0, vid.videoWidth, vid.videoHeight);
-  let t0 = performance.now();
+  t0 = performance.now();
   if (filter === 'Grayscale') pixels.data.set(m.greyScale(pixels.data));
   if (filter === 'Brighten') pixels.data.set(m.brighten(pixels.data));
   if (filter === 'Invert') pixels.data.set(m.invert(pixels.data));
@@ -47,17 +48,9 @@ function draw() {
   if (filter === 'Analog TV') pixels.data.set(m.edgeManip(pixels.data, 7, cw)); //dots
   if (filter === 'Emboss') pixels.data.set(m.edgeManip(pixels.data, 1, cw)); //emboss
   if (filter === 'Super Edge') pixels.data.set(m.convFilt(pixels.data, 720, 486));
-  let t1 = performance.now();
+  t1 = performance.now();
   context.putImageData(pixels, 0, 0);
-  animation = requestAnimationFrame(draw); 
-  //adding lines to stats stream
-  if (animation % 15 === 0) {
-    perf1 = t1 - t0;
-    perfStr1 = perf1.toString().slice(0, 4);
-    wasmStats = `WASM computation time: ${perfStr1} ms`;
-    document.getElementById("stats").textContent = wasmStats;
-    line1.append(new Date().getTime(), 1000 / perf1);
-  }
+  requestAnimationFrame(draw); 
 }
 
 //for javascript example
@@ -65,24 +58,33 @@ setTimeout(draw2, 1000); //hacky way to wait for module to load
 function draw2() {
   context2.drawImage(vid2, 0, 0);
   let pixels2 = context2.getImageData(0, 0, vid2.videoWidth, vid2.videoHeight);
-  let t2 = performance.now();
+  t2 = performance.now();
   //pixels2.data.set(jsGreyScale(pixels2.data));
   if (filter === 'Grayscale') pixels2.data.set(jsGreyScale(pixels2.data));
   if (filter === 'Brighten') pixels2.data.set(jsBrighten(pixels2.data));
   if (filter === 'Invert') pixels2.data.set(jsInvert(pixels2.data));
-  if (filter === 'Noise') pixels2.data.set(jsNoise(pixels2.data));
-  let t3 = performance.now();
+  if (filter === 'Sunset') pixels2.data.set(jsEdgeManip(pixels2.data, 4, cw2));
+  if (filter === 'Analog TV') pixels2.data.set(jsEdgeManip(pixels2.data, 7, cw2));
+  if (filter === 'Emboss') pixels2.data.set(jsEdgeManip(pixels2.data, 1, cw2));
+  if (filter === 'Super Edge') pixels2.data.set(jsConvFilter(pixels2.data));
+  t3 = performance.now();
+
   context2.putImageData(pixels2, 0, 0);
-  //adding lines to stats stream
-  animation2 = requestAnimationFrame(draw2);  
-    if (animation % 15 === 0) {
-    perf2 = t3 - t2;
-    perfStr2 = perf2.toString().slice(0, 5);
-    jsStats = `JS computation time: ${perfStr2} ms`;
-    document.getElementById("stats").textContent += '  ' + jsStats;
-    line2.append(new Date().getTime(), 1000 / perf2);
-  }
+  requestAnimationFrame(draw2);  
 }
+function graphStats () {
+  perf1 = t1 - t0;
+  perf2 = t3 - t2;
+  perfStr1 = perf1.toString().slice(0, 4);
+  perfStr2 = perf2.toString().slice(0, 5);
+  wasmStats = `WASM computation time: ${perfStr1} ms`;
+  jsStats = `JS computation time: ${perfStr2} ms`;
+  document.getElementById("stats").textContent = wasmStats + jsStats;
+  line1.append(new Date().getTime(), 1000 / perf1);
+  line2.append(new Date().getTime(), 1000 / perf2);
+  setTimeout(graphStats, 1000);
+}
+
 
 
 
