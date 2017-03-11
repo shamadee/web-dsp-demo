@@ -5,7 +5,10 @@ loadWASM()
     //window.onload = initVideo('media/vid.mp4', m);
 });
 let filter = 'Normal';
-let t0, t1, t2, t3, line1, line2, perf1, perf2, perfStr1, perfStr2;
+let t0, t1 = Infinity, t2, t3 = Infinity, line1, line2, perf1, perf2, perfStr1, perfStr2, wasmStats, jsStats, percent;
+let pixels, pixels2;
+let cw, cw2, ch, ch2;
+let speedDiv = document.getElementsByTagName('h2')[0];
 createStats();
 addButtons();
 graphStats();
@@ -14,7 +17,6 @@ graphStats();
 var vid = document.getElementById('v');
 var canvas = document.getElementById('c');
 var context = canvas.getContext('2d');
-var cw, ch;
 vid.addEventListener("loadedmetadata", function() {
   canvas.setAttribute('height', vid.videoHeight);
   canvas.setAttribute('width', vid.videoWidth);
@@ -26,7 +28,6 @@ vid.addEventListener("loadedmetadata", function() {
 var vid2 = document.getElementById('v2');
 var canvas2 = document.getElementById('c2');
 var context2 = canvas2.getContext('2d');
-var cw2, ch2;
 vid2.addEventListener("loadedmetadata", function() {
   canvas2.setAttribute('height', vid2.videoHeight);
   canvas2.setAttribute('width', vid2.videoWidth);
@@ -38,17 +39,12 @@ vid2.addEventListener("loadedmetadata", function() {
 setTimeout(draw, 1000); //hacky way to wait for module to load
 function draw() {
   context.drawImage(vid, 0, 0);
-  let pixels = context.getImageData(0, 0, vid.videoWidth, vid.videoHeight);
-  t0 = performance.now();
-  if (filter === 'Grayscale') pixels.data.set(m.greyScale(pixels.data));
-  if (filter === 'Brighten') pixels.data.set(m.brighten(pixels.data));
-  if (filter === 'Invert') pixels.data.set(m.invert(pixels.data));
-  if (filter === 'Noise') pixels.data.set(m.noise(pixels.data));
-  if (filter === 'Sunset') pixels.data.set(m.edgeManip(pixels.data, 4, cw)); //red cyan
-  if (filter === 'Analog TV') pixels.data.set(m.edgeManip(pixels.data, 7, cw)); //dots
-  if (filter === 'Emboss') pixels.data.set(m.edgeManip(pixels.data, 1, cw)); //emboss
-  if (filter === 'Super Edge') pixels.data.set(m.convFilt(pixels.data, 720, 486));
-  t1 = performance.now();
+  pixels = context.getImageData(0, 0, vid.videoWidth, vid.videoHeight);
+  if (filter !== 'Normal') {
+    t0 = performance.now();
+    setPixels(filter, 'wasm');
+    t1 = performance.now();
+  }
   context.putImageData(pixels, 0, 0);
   requestAnimationFrame(draw); 
 }
@@ -57,21 +53,18 @@ function draw() {
 setTimeout(draw2, 1000); //hacky way to wait for module to load
 function draw2() {
   context2.drawImage(vid2, 0, 0);
-  let pixels2 = context2.getImageData(0, 0, vid2.videoWidth, vid2.videoHeight);
-  t2 = performance.now();
-  //pixels2.data.set(jsGreyScale(pixels2.data));
-  if (filter === 'Grayscale') pixels2.data.set(jsGreyScale(pixels2.data));
-  if (filter === 'Brighten') pixels2.data.set(jsBrighten(pixels2.data));
-  if (filter === 'Invert') pixels2.data.set(jsInvert(pixels2.data));
-  if (filter === 'Sunset') pixels2.data.set(jsEdgeManip(pixels2.data, 4, cw2));
-  if (filter === 'Analog TV') pixels2.data.set(jsEdgeManip(pixels2.data, 7, cw2));
-  if (filter === 'Emboss') pixels2.data.set(jsEdgeManip(pixels2.data, 1, cw2));
-  if (filter === 'Super Edge') pixels2.data.set(jsConvFilter(pixels2.data));
-  t3 = performance.now();
-
+  pixels2 = context2.getImageData(0, 0, vid2.videoWidth, vid2.videoHeight);
+  if (filter !== 'Normal') {
+    t2 = performance.now();
+    setPixels(filter, 'js');
+    t3 = performance.now();
+  }
   context2.putImageData(pixels2, 0, 0);
   requestAnimationFrame(draw2);  
 }
+
+
+//STATS, Buttons adding, SetPixels function stuff starts below
 function graphStats () {
   perf1 = t1 - t0;
   perf2 = t3 - t2;
@@ -82,11 +75,13 @@ function graphStats () {
   document.getElementById("stats").textContent = wasmStats + jsStats;
   line1.append(new Date().getTime(), 1000 / perf1);
   line2.append(new Date().getTime(), 1000 / perf2);
-  setTimeout(graphStats, 1000);
+  percent = Math.round(Math.abs(perf1-perf2)/perf1*100);
+  if (filter !== 'Normal') {
+    speedDiv.innerText = `Speed Stats: WASM is currently ${percent}% faster than JS`;
+  }
+  else speedDiv.innerText = 'Speed Stats'
+  setTimeout(graphStats, 500);
 }
-
-
-
 
 function createStats() {
   let smoothie = new SmoothieChart({
@@ -137,5 +132,28 @@ function addButtons (filtersArr) {
     button.innerText = filters[i];
     button.addEventListener('click', () => filter = filters[i]);
     buttonDiv.appendChild(button);
+  }
+}
+
+function setPixels (filter, language) {
+  if (language === 'wasm') {
+    if (filter === 'Grayscale') pixels.data.set(m.greyScale(pixels.data));
+    if (filter === 'Brighten') pixels.data.set(m.brighten(pixels.data));
+    if (filter === 'Invert') pixels.data.set(m.invert(pixels.data));
+    if (filter === 'Noise') pixels.data.set(m.noise(pixels.data));
+    if (filter === 'Sunset') pixels.data.set(m.edgeManip(pixels.data, 4, cw)); //red cyan
+    if (filter === 'Analog TV') pixels.data.set(m.edgeManip(pixels.data, 7, cw)); //dots
+    if (filter === 'Emboss') pixels.data.set(m.edgeManip(pixels.data, 1, cw)); //emboss
+    if (filter === 'Super Edge') pixels.data.set(m.convFilt(pixels.data, 720, 486));
+  }
+  if (language === 'js') {
+    if (filter === 'Grayscale') pixels2.data.set(jsGreyScale(pixels2.data));
+    if (filter === 'Brighten') pixels2.data.set(jsBrighten(pixels2.data));
+    if (filter === 'Invert') pixels2.data.set(jsInvert(pixels2.data));
+    if (filter === 'Noise') pixels2.data.set(jsNoise(pixels2.data));
+    if (filter === 'Sunset') pixels2.data.set(jsEdgeManip(pixels2.data, 4, cw2));
+    if (filter === 'Analog TV') pixels2.data.set(jsEdgeManip(pixels2.data, 7, cw2));
+    if (filter === 'Emboss') pixels2.data.set(jsEdgeManip(pixels2.data, 1, cw2));
+    if (filter === 'Super Edge') pixels2.data.set(jsConvFilter(pixels2.data));
   }
 }
