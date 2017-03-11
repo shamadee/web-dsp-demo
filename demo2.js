@@ -79,7 +79,7 @@ function graphStats () {
   document.getElementById("stats").textContent = wasmStats + jsStats;
   line1.append(new Date().getTime(), 1000 / perf1);
   line2.append(new Date().getTime(), 1000 / perf2);
-  percent = Math.round((perf1-perf2)/perf1*100);
+  percent = Math.round((perf2-perf1/perf1)*100);
   if (filter !== 'Normal') {
     speedDiv.innerText = `Speed Stats: WASM is currently ${percent}% faster than JS`;
   }
