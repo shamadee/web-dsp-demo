@@ -128,9 +128,9 @@ extern "C" {
         int mag = sqrt((newX * newX) + (newY * newY));
         if (mag > 255) mag = 255;
         int offset = ((width * y) + x) << 2; //multiply by 4
-        data[offset] = 255 - mag;
-        data[offset + 1] = 255 - mag;
-        data[offset + 2] = 255 - mag;
+        data[offset] = mag;
+        data[offset + 1] = mag;
+        data[offset + 2] = mag;
         data[offset + 3] = 255;
       }
     }
