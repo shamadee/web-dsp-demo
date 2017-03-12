@@ -7,19 +7,19 @@ EMSDK_ENV=$(find "$BASEDIRSHA" -type f -name "emsdk_env.sh")
 source "$EMSDK_ENV"
 
 # add exported C/C++ functions here
-CPP_FUNCS="[ \
-'_manipArr', \
- '_manipSingle', \
- '_sobelFilter', \
- '_convFilter', \
- '_fib',
- '_doubler', \
- '_grayScale', \
- '_brighten', \
- '_invert', \
- '_noise', \
- '_edgeManip' \
- ]" \
+CPP_FUNCS="[ 
+'_manipArr', 
+ '_manipSingle', 
+ '_sobelFilter', 
+ '_convFilter', 
+ '_fib', 
+ '_doubler', 
+ '_grayScale', 
+ '_brighten', 
+ '_invert', 
+ '_noise', 
+ '_edgeManip' 
+ ]" 
 
 echo "compiling C++ to WASM ..."
 emcc -o cMath.js math.cpp -lm -O3 -s WASM=1 \
