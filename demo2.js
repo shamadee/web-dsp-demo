@@ -189,7 +189,7 @@ function setPixels (filter, language) {
       case 'Sunset': pixels2.data.set(jsEdgeManip(pixels2.data, 4, cw2)); break;
       case 'Analog TV': pixels2.data.set(jsEdgeManip(pixels2.data, 7, cw2)); break;
       case 'Emboss': pixels2.data.set(jsEdgeManip(pixels2.data, 1, cw2)); break;
-      case 'Super Edge': pixels2.data.set(jsConvFilter(pixels2.data, vid2.videoHeight, vid2.videoWidth)); break;
+      case 'Super Edge': pixels2.data.set(jsConvFilter(pixels2.data, vid2.videoWidth, vid2.videoHeight)); break;
     }
   }
 }
@@ -202,5 +202,5 @@ function jsFallback() {
   m['edgeManip'] = jsEdgeManip;
   m['edgeManip'] = jsEdgeManip;
   m['edgeManip'] = jsEdgeManip;
-  m['convFilt'] = jsConvFilter;
+  m['sobelFilter'] = jsConvFilter;
 }
