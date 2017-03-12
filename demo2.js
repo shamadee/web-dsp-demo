@@ -1,9 +1,11 @@
 let m = {};
 let filter = 'Normal';
-let t0, t1 = Infinity, t2, t3 = Infinity, line1, line2, perf1, perf2, perfStr1, perfStr2, wasmStats, jsStats, percent;
+let t0, t1 = Infinity, t2, t3 = Infinity, line1, line2, perf1, perf2, perfStr1, perfStr2, wasmStats, jsStats, percent=0;
+let counter=0, sum1=0, sum2=0;
 let pixels, pixels2;
 let cw, cw2, ch, ch2;
 let speedDiv = document.getElementsByTagName('h2')[0];
+let avgDisplay = document.getElementById('avg');
 loadWASM()
   .then(cMath => {
     m = cMath;
@@ -70,16 +72,26 @@ function draw2() {
 
 //STATS, Buttons adding, SetPixels function stuff starts below
 function graphStats () {
-  perf1 = t1 - t0;
-  perf2 = t3 - t2;
-  perfStr1 = perf1.toString().slice(0, 4);
-  perfStr2 = perf2.toString().slice(0, 5);
-  wasmStats = `WASM computation time: ${perfStr1} ms`;
-  jsStats = ` JS computation time: ${perfStr2} ms`;
-  document.getElementById("stats").textContent = wasmStats + jsStats;
-  line1.append(new Date().getTime(), 1000 / perf1);
-  line2.append(new Date().getTime(), 1000 / perf2);
-  percent = Math.round((perf2-perf1/perf1)*100);
+  if (filter !== 'Normal') {
+    perf1 = t1 - t0;
+    perf2 = t3 - t2;
+    sum1 += perf1;
+    sum2 += perf2;
+    counter += 1;
+    if (counter % 5 === 0) {
+      let avg1 = sum1 / counter;
+      let avg2 = sum2 / counter;
+      avgDisplay.innerText = `Average computation time WASM: ${avg1.toString().slice(0, 4)} ms, JS: ${avg2.toString().slice(0, 4)} ms`;
+      line1.append(new Date().getTime(), 1000 / perf1);
+      line2.append(new Date().getTime(), 1000 / perf2);
+    }
+    perfStr1 = perf1.toString().slice(0, 4);
+    perfStr2 = perf2.toString().slice(0, 5);
+    wasmStats = `WASM computation time: ${perfStr1} ms`;
+    jsStats = ` JS computation time: ${perfStr2} ms`;
+    document.getElementById("stats").textContent = wasmStats + jsStats;
+    percent = Math.round(((perf2 - perf1) / perf1) * 100);
+  }
   if (filter !== 'Normal') {
     speedDiv.innerText = `Speed Stats: WASM is currently ${percent}% faster than JS`;
   }
