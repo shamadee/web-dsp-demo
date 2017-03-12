@@ -78,7 +78,6 @@ function jsConvFilter(data, width, height) {
                 data[doffset + 1] = avg;
                 data[doffset + 2] = avg;
                 data[doffset + 3] = 255;
-
             }
         }
         //Sobel
