@@ -103,6 +103,36 @@ function jsFallback() {
   m['edgeManip'] = jsEdgeManip;
   m['edgeManip'] = jsEdgeManip;
   m['sobelFilter'] = jsConvFilter;
+  m['convFilter'] = jsMatrixConvolution;
+}
+
+function jsMatrixConvolution(data, width, height, matrix, factor, bias, count) {
+  for (let i = 0; i < count; i += 1) {
+    const w = matrix[0].length;
+    const h = matrix.length;
+    const half = Math.floor(h / 2);
+
+    for (let y = 0; y < height - 1; y += 1) {
+      for (let x = 0; x < width - 1; x += 1) {
+        const px = (y * width + x) *4;  // pixel index
+        let r = 0, g = 0, b = 0;
+
+        for (let cy = 0; cy < w; ++cy) {
+          for (let cx = 0; cx < h; ++cx) {
+            const cpx = ((y + (cy - half)) * width + (x + (cx - half))) * 4;
+            r += data[cpx + 0] * matrix[cy][cx];
+            g += data[cpx + 1] * matrix[cy][cx];
+            b += data[cpx + 2] * matrix[cy][cx];
+          }
+        }
+
+        data[px + 0] = factor * r + bias;
+        data[px + 1] = factor * g + bias;
+        data[px + 2] = factor * b + bias;
+      }
+    }
+  }
+  return data;
 }
 
 function jsGrayScale(data) {
