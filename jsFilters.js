@@ -1,21 +1,50 @@
-function jsGrayScale(data) {
-    for (let i = 0; i < data.length; i += 4) {
-      let r = data[i];
-      let g = data[i+1];
-      let b = data[i+2];
-      let a = data[i+3];
-      let brightness = (r*.21+g*.72+b*.07);
+function jsMatrixConvolution(data, width, height, matrix, factor, bias, count) {
+  for (let i = 0; i < count; i += 1) {
+    const w = matrix[0].length;
+    const h = matrix.length;
+    const half = Math.floor(h / 2);
 
-      data[i] = r;
-      data[i+1] = r;
-      data[i+2] = r;
-      data[i+3] = a;
+    for (let y = 0; y < height - 1; y += 1) {
+      for (let x = 0; x < width - 1; x += 1) {
+        const px = (y * width + x) *4;  // pixel index
+        let r = 0, g = 0, b = 0;
+
+        for (let cy = 0; cy < w; ++cy) {
+          for (let cx = 0; cx < h; ++cx) {
+            const cpx = ((y + (cy - half)) * width + (x + (cx - half))) * 4;
+            r += data[cpx + 0] * matrix[cy][cx];
+            g += data[cpx + 1] * matrix[cy][cx];
+            b += data[cpx + 2] * matrix[cy][cx];
+          }
+        }
+
+        data[px + 0] = factor * r + bias;
+        data[px + 1] = factor * g + bias;
+        data[px + 2] = factor * b + bias;
+      }
     }
-    return data;
+  }
+  return data;
 }
 
-function jsBrighten(data) {
-  let brightness = 25;
+function jsGrayScale(data) {
+  for (let i = 0; i < data.length; i += 4) {
+    let r = data[i];
+    let g = data[i+1];
+    let b = data[i+2];
+    let a = data[i+3];
+    // let brightness = (r*.21+g*.72+b*.07);
+
+    data[i] = r;
+    data[i+1] = r;
+    data[i+2] = r;
+    data[i+3] = a;
+  }
+  return data;
+}
+
+function jsBrighten(data, brightness = 25) {
+  // let brightness = 25;
   for (let i = 0; i < data.length; i += 4) {
     data[i] + data[i] + brightness > 255 ? 255 : data[i] += brightness;
     data[i+1] + data[i+1] + brightness > 255 ? 255 : data[i+1] += brightness;
@@ -46,10 +75,10 @@ function jsNoise(data) {
 
 function jsEdgeManip(data, filt, wid) {
   for (let i = 0; i < data.length; i += filt) {
-      if (i % 4 != 3) {
-        data[i] = 127 + 2 * data[i] - data[i + 4] - data[i + wid * 4];
-      }
+    if (i % 4 != 3) {
+      data[i] = 127 + 2 * data[i] - data[i + 4] - data[i + wid * 4];
     }
+  }
   return data;
 }
 
