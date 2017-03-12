@@ -178,6 +178,18 @@ function setPixels (filter, language) {
       case 'Analog TV': pixels2.data.set(jsEdgeManip(pixels2.data, 7, cw2)); break;
       case 'Emboss': pixels2.data.set(jsEdgeManip(pixels2.data, 1, cw2)); break;
       case 'Super Edge': pixels2.data.set(jsConvFilter(pixels2.data, vid2.videoHeight, vid2.videoWidth)); break;
+      case 'Gaussian Blur': 
+        kernel = [[1, 1, 1], [1, 1, 1], [1, 1, 1]];
+        pixels2.data.set(jsMatrixConvolution(pixels2.data, vid2.videoWidth, vid2.videoHeight, kernel, 1/9, 0, 3));
+        break;
+      case 'Sharpen':
+        kernel = [[-1, -1, -1], [-1,  8, -1], [-1, -1, -1]];
+        pixels2.data.set(jsMatrixConvolution(pixels2.data, vid2.videoWidth, vid2.videoHeight, kernel, 1, 0, 1));
+        break;
+      case 'Sharpen2':
+        kernel = [[0, -1, 0], [-1, 5, -1], [0, -1, 0]];
+        pixels2.data.set(jsMatrixConvolution(pixels2.data, vid2.videoWidth, vid2.videoHeight, kernel, 1/1.99, 0, 1));
+        break;
     }
   }
 }
