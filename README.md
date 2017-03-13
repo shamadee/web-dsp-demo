@@ -30,10 +30,10 @@ button.addEventListener('click', () => {
 ```
 ###Video and Image Filter Methods
 A number of video/image filters you can execute on an array of RGBA pixel data:
-m.grayScale
-m.brighten
-m.invert
-m.noise
-m.edgeManip
-m.sobelFilter
-m.convFilter
+m.grayScale(data)
+m.brighten(data)
+m.invert(data)
+m.noise(data)
+m.edgeManip(data, filt, width)
+m.sobelFilter(data, width, height)
+m.convFilter(data. kernel, int, divisor, width, height)
