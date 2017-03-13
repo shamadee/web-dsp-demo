@@ -55,7 +55,7 @@ extern "C" {
     }
   }
 
-  void noise (unsigned char* data, int len) {
+  void noise (float* data, int len) {
     int random; 
     for (int i = 0; i < len; i += 4) {
       random = (rand() % 70) - 35;
