@@ -32,10 +32,10 @@ function loadWASM () {
                 _free(mem);
                 return grayScaled;
               };
-              cMath['sobelFilter'] = function(array, width, height) {
+              cMath['sobelFilter'] = function(array, width, height, invert=false) {
                 mem = _malloc(array.length);
                 HEAPU8.set(array, mem);
-                Module._sobelFilter(mem, width, height);
+                Module._sobelFilter(mem, width, height, invert);
                 const filtered = HEAPU8.subarray(mem, mem + array.length);
                 _free(mem);
                 return filtered;
@@ -57,10 +57,10 @@ function loadWASM () {
                 return invert;
               };
               cMath['noise'] = function(array) {
-                mem = _malloc(array.length);
-                HEAPU8.set(array, mem);
+                mem = _malloc(array.length * Float32Array.BYTES_PER_ELEMENT);
+                HEAPF32.set(array, mem / Float32Array.BYTES_PER_ELEMENT);
                 Module._noise(mem, array.length);
-                const noise = HEAPU8.subarray(mem, mem + array.length);
+                const noise = HEAPF32.subarray(mem / Float32Array.BYTES_PER_ELEMENT, mem / Float32Array.BYTES_PER_ELEMENT + array.length);
                 _free(mem);
                 return noise;
               };
@@ -173,7 +173,7 @@ function jsInvert(data) {
 function jsNoise(data) {
   let random;
   for (let i = 0; i < data.length; i += 4) {
-    random = (Math.random()-0.5)*70
+    random = (Math.random() - 0.5) * 70;
     data[i] = data[i] + random; //r
     data[i+1] = data[i+1] + random; //g
     data[i+2] = data[i+2] + random; //b
@@ -190,7 +190,7 @@ function jsEdgeManip(data, filt, wid) {
   return data;
 }
 
-function jsConvFilter(data, width, height) {
+function jsConvFilter(data, width, height, invert=false) {
   const out = [];
   let wid = width;
   let hei = height;
@@ -246,6 +246,7 @@ function jsConvFilter(data, width, height) {
                     );
                     var mag = Math.floor(Math.sqrt((newX * newX) + (newY * newY)) >>> 0);
                     if (mag > 255) mag = 255;
+                    if (invert) mag = 255 - mag;
                     data[((wid * y) + x) * 4] = mag;
                     data[((wid * y) + x) * 4 + 1] = mag;
                     data[((wid * y) + x) * 4 + 2] = mag;

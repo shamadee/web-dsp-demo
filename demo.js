@@ -1,6 +1,6 @@
 let m = {};
-let filter = 'Normal';
-let t0, t1 = Infinity, t2, t3 = Infinity, line1, line2, perf1, perf2, perfStr1, perfStr2, wasmStats, jsStats, percent=0;
+let filter = 'Normal', prevFilter;
+let t0, t1 = Infinity, t2, t3 = Infinity, line1, line2, perf1, perf2, perfStr1, perfStr2, avg1, avg2, wasmStats, jsStats, percent=0;
 let counter=0, sum1=0, sum2=0;
 let pixels, pixels2;
 let cw, cw2, ch, ch2;
@@ -38,8 +38,8 @@ var context2 = canvas2.getContext('2d');
 vid2.addEventListener("loadeddata", function() {
   canvas2.setAttribute('height', vid2.videoHeight);
   canvas2.setAttribute('width', vid2.videoWidth);
-  cw2 = canvas.clientWidth; //usually same as canvas.height
-  ch2 = canvas.clientHeight;
+  cw2 = canvas2.clientWidth; //usually same as canvas.height
+  ch2 = canvas2.clientHeight;
   draw2();
 });
 
@@ -72,6 +72,17 @@ function draw2() {
 
 //STATS, Buttons adding, SetPixels function stuff starts below
 function graphStats () {
+  // reset values;
+  if (prevFilter !== filter) {
+    perf1 = 0;
+    perf2 = 0;
+    sum1 = 0;
+    sum2 = 0;
+    avg1 = 0;
+    avg2 = 0;
+    counter = 0;
+  };
+
   if (filter !== 'Normal') {
     perf1 = t1 - t0;
     perf2 = t3 - t2;
@@ -79,8 +90,8 @@ function graphStats () {
     sum2 += perf2;
     counter += 1;
     if (counter % 5 === 0) {
-      let avg1 = sum1 / counter;
-      let avg2 = sum2 / counter;
+      avg1 = sum1 / counter;
+      avg2 = sum2 / counter;
       avgDisplay.innerText = `Average computation time WASM: ${avg1.toString().slice(0, 4)} ms, JS: ${avg2.toString().slice(0, 4)} ms`;
       line1.append(new Date().getTime(), 1000 / perf1);
       line2.append(new Date().getTime(), 1000 / perf2);
@@ -96,6 +107,8 @@ function graphStats () {
     speedDiv.innerText = `Speed Stats: WASM is currently ${percent}% faster than JS`;
   }
   else speedDiv.innerText = 'Speed Stats';
+
+  prevFilter = filter;
   setTimeout(graphStats, 500);
 }
 
@@ -116,7 +129,7 @@ function createStats() {
     },
   });
   // send smoothie data to canvas
-  smoothie.streamTo(document.getElementById('statsCanvas'), 1000);
+  smoothie.streamTo(document.getElementById('statsCanvas'), 500);
   
   // declare smoothie timeseries 
   line1 = new TimeSeries();
@@ -140,7 +153,7 @@ function createStats() {
 
 function addButtons (filtersArr) {
   let filters = ['Normal', 'Grayscale', 'Brighten', 'Invert', 'Noise', 'Sunset', 
-                 'Analog TV', 'Emboss', 'Super Edge', 'Gaussian Blur', 'Sharpen', 'Sharpen2']
+                 'Analog TV', 'Emboss', 'Super Edge', 'Super Edge Inv', 'Gaussian Blur', 'Sharpen', 'Sharpen2']
   let buttonDiv = document.createElement('div');
   buttonDiv.id = 'buttons';
   document.body.appendChild(buttonDiv);
@@ -164,6 +177,7 @@ function setPixels (filter, language) {
       case 'Analog TV': pixels.data.set(m.edgeManip(pixels.data, 7, cw)); break;
       case 'Emboss': pixels.data.set(m.edgeManip(pixels.data, 1, cw)); break;
       case 'Super Edge': pixels.data.set(m.sobelFilter(pixels.data, vid.videoWidth, vid.videoHeight)); break;
+      case 'Super Edge Inv': pixels.data.set(m.sobelFilter(pixels.data, vid.videoWidth, vid.videoHeight, true)); break;
       case 'Gaussian Blur':
         kernel = [1, 1, 1, 1, 1, 1, 1, 1, 1];
         divisor = kernel.reduce((a, b) => a + b, 0) || 1;
@@ -190,6 +204,7 @@ function setPixels (filter, language) {
       case 'Analog TV': pixels2.data.set(jsEdgeManip(pixels2.data, 7, cw2)); break;
       case 'Emboss': pixels2.data.set(jsEdgeManip(pixels2.data, 1, cw2)); break;
       case 'Super Edge': pixels2.data.set(jsConvFilter(pixels2.data, vid2.videoWidth, vid2.videoHeight)); break;
+      case 'Super Edge Inv': pixels2.data.set(jsConvFilter(pixels2.data, vid2.videoWidth, vid2.videoHeight, true)); break;
       case 'Gaussian Blur': 
         kernel = [[1, 1, 1], [1, 1, 1], [1, 1, 1]];
         pixels2.data.set(jsMatrixConvolution(pixels2.data, vid2.videoWidth, vid2.videoHeight, kernel, 1/9, 0, 3));
