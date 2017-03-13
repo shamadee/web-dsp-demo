@@ -2,7 +2,7 @@
 ## A client-side DSP library utilizing the power of WebAssembly (.wasm)
 
 ###Install
-Drop the 'lib' folder in to your project and only load the JS library in a script tag
+Drop the 'lib' folder in to your project and only load the JS  library in a script tag
 ```html
 <script src = '/lib/webdsp.js' type = 'text/javascript'>
 ```
@@ -11,9 +11,9 @@ Drop the 'lib' folder in to your project and only load the JS library in a scrip
 Use loadWASM() to fetch the WebAssembly module as a promise object.
 Use jsFallback() in the catch block to handle browsers that don't support .wasm
 ```javascript
-var m = {};
-loadWasm().then(module => {
-  m = module;
+var wam = {};
+loadWASM().then(module => {
+  wam = module;
 }).catch(err => {
   jsFallback();
 }).then(() => {
@@ -25,15 +25,15 @@ Now you can call a WebAssembly method with plain JS:
 ```javascript
 pixels = context.getImageData(0,0,width,height);
 button.addEventListener('click', () => {
-  m.invert(pixels);
+  wam.invert(pixels);
 })
 ```
 ###Video and Image Filter Methods
 A number of video/image filters you can execute on an array of RGBA pixel data: <br>
-m.grayScale(data) <br>
-m.brighten(data) <br>
-m.invert(data) <br>
-m.noise(data) <br>
-m.edgeManip(data, filt, width) <br>
-m.sobelFilter(data, width, height) <br>
-m.convFilter(data. kernel, int, divisor, width, height)
+wam.grayScale(data) <br>
+wam.brighten(data) <br>
+wam.invert(data) <br>
+wam.noise(data) <br>
+wam.edgeManip(data, filt, width) <br>
+wam.sobelFilter(data, width, height) <br>
+wam.convFilter(data. kernel, int, divisor, width, height)
