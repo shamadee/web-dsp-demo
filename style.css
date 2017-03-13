@@ -5,12 +5,12 @@
   background-color: #EEE;
 }
 
-.wasmTxt {
-  color: green;
-}
-
-.jsTxt {
-  color: blue;
+#statsContainer {
+  position: absolute;
+  /*border: 1px solid green;*/
+  left: 900px;
+  top: 75px;
+  bottom: 200;
 }
 
 #buttons {
@@ -20,12 +20,12 @@
   width: 100;
 }
 
-#buttons button, #jsButton {
+#buttons button {
   color: white;
   background-color: silver;
   border: none;
   width: 120;
-  height: 20;
+  height: 32;
   padding: 10, 0, 10, 0;
   margin-top: 5px;
 }
@@ -34,6 +34,18 @@
   background-color: darkslategray;
 }
 
+#jsButton {
+  color: white;
+  background-color: silver;
+  border: none;
+  width: 120;
+  height: 32;
+  padding: 10, 0, 10, 0;
+}
 #jsButton:hover {
   background-color: red;
+}
+
+#js-container {
+  float: left;
 }
