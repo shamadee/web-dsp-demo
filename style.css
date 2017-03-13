@@ -1,19 +1,39 @@
-/*#stats {
-  position: absolute;
-  bottom: 230;
-  left: 20;
+
+* {
+  font-family: "Verdana", sans-serif;
+  color: darkslategrey;
+  background-color: #EEE;
 }
 
-#statsCanvas {
-  position: absolute;
-  bottom: 100;
-  left: 20;
-  height: 120;
-  width: 300;
+.wasmTxt {
+  color: green;
 }
-*/
+
+.jsTxt {
+  color: blue;
+}
+
 #buttons {
   position: absolute;
-  top: 50px;
+  top: 75px;
   left: 750px;
+  width: 100;
+}
+
+#buttons button, #jsButton {
+  color: white;
+  background-color: silver;
+  border: none;
+  width: 120;
+  height: 20;
+  padding: 10, 0, 10, 0;
+  margin-top: 5px;
+}
+
+#buttons button:hover {
+  background-color: darkslategray;
+}
+
+#jsButton:hover {
+  background-color: red;
 }

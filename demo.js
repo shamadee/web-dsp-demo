@@ -21,7 +21,7 @@ loadWASM()
 });
 
 function disableJS() {
-  jsActive = false;
+  jsActive = !jsActive;
 }
 
 //wasm video
@@ -158,14 +158,18 @@ function createStats() {
 
 function addButtons (filtersArr) {
   let filters = ['Normal', 'Grayscale', 'Brighten', 'Invert', 'Noise', 'Sunset', 
-                 'Analog TV', 'Emboss', 'Super Edge', 'Super Edge Inv', 'Gaussian Blur', 'Sharpen', 'Sharpen2']
+                 'Analog TV', 'Emboss', 'Super Edge', 'Super Edge Inv',
+                 'Gaussian Blur', 'Sharpen', 'Sharpen2'];
   let buttonDiv = document.createElement('div');
   buttonDiv.id = 'buttons';
   document.body.appendChild(buttonDiv);
   for (let i = 0; i < filters.length; i++) {
     let button = document.createElement('button');
     button.innerText = filters[i];
-    button.addEventListener('click', () => filter = filters[i]);
+    button.addEventListener('click', function() {
+      filter = filters[i];
+      this.classList.add('selected');
+    });
     buttonDiv.appendChild(button);
   }
 }
