@@ -17,11 +17,15 @@
   <h3>Frame Rate. WASM = Green; JS = Blue;</h3>
   <canvas id = "statsCanvas"></canvas>
   </div>
-  <h1>JS Example</h1>
-  <canvas id="c2" width="640" height="360"></canvas>
-  <video id="v2" controls="" loop="" autoplay="" style="display:none;"> 
-	<source src="media/vid.mp4" type="video/mp4"/> 
-  </video>
+  </br>
+  <button onclick="disableJS()">Disable Javascript</button>
+  <div id='js-container'>
+    <h1>JS Example</h1>
+    <canvas id="c2" width="640" height="360"></canvas>
+    <video id="v2" controls="" loop="" autoplay="" style="display:none;"> 
+    <source src="media/vid.mp4" type="video/mp4"/> 
+    </video>
+  </div>
   <script type="text/javascript" src="smoothie.js"></script>
   <script src='wasmMath.js'></script>
   <script src='demo.js'></script>
