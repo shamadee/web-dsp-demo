@@ -1,14 +1,20 @@
 
 ## A client-side DSP library utilizing the power of WebAssembly (.wasm)
 
-### Dropping in WebAssembly
+###Install
+Drop the 'lib' folder in to your project and only load the JS library in a script tag
+```html
+<script src = '/lib/webdsp.js' type = 'text/javascript'>
+```
+
+###Loading the WebAssembly Module
 Use loadWASM() to fetch the WebAssembly module as a promise object.
-If WebAssembly is not supported in the browser, use jsFallback() in the catch block
+Use jsFallback() in the catch block to handle browsers that don't support .wasm
 ```javascript
 var m = {};
 loadWasm().then(module => {
   m = module;
-}).catch((err => {
+}).catch(err => {
   jsFallback();
 }).then(() => {
   //things to execute on page load only after module is loaded
@@ -21,3 +27,13 @@ pixels = context.getImageData(0,0,width,height);
 button.addEventListener('click', () => {
   m.invert(pixels);
 })
+```
+###Video and Image Filter Methods
+A number of video/image filters you can execute on an array of RGBA pixel data: <br>
+m.grayScale(data) <br>
+m.brighten(data) <br>
+m.invert(data) <br>
+m.noise(data) <br>
+m.edgeManip(data, filt, width) <br>
+m.sobelFilter(data, width, height) <br>
+m.convFilter(data. kernel, int, divisor, width, height)
