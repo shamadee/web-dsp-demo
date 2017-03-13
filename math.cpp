@@ -137,7 +137,7 @@ extern "C" {
     }
   }
 
-  void convFilter(float* data, int width, int height, float* kern, int Ks, double divisor, double offset, int count) {
+  void convFilter(float* data, int width, int height, float* kern, int Ks, double divisor, double bias, int count) {
     for (int i = 0; i < count; i++) {
       for (int y = 1; y < height - 1; y++) {
         for (int x = 1; x < width - 1; x++) {
