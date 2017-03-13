@@ -2,7 +2,7 @@
 ## A client-side DSP library utilizing the power of WebAssembly (.wasm)
 
 ###Install
-Drop the 'lib' folder in to your project and only load the library in a script tag
+Drop the 'lib' folder in to your project and only load the JS library in a script tag
 ```html
 <script src = '/lib/webdsp.js' type = 'text/javascript'>
 ```
@@ -30,3 +30,10 @@ button.addEventListener('click', () => {
 ```
 ###Video and Image Filter Methods
 A number of video/image filters you can execute on an array of RGBA pixel data:
+m.grayScale
+m.brighten
+m.invert
+m.noise
+m.edgeManip
+m.sobelFilter
+m.convFilter
