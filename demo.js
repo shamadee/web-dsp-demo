@@ -22,6 +22,9 @@ loadWASM()
 
 function disableJS() {
   jsActive = !jsActive;
+  if (jsActive) document.getElementById('jsButton').innerHTML = 'Disable Javascript';
+  else document.getElementById('jsButton').innerHTML = 'Enable Javascript';
+
 }
 
 //wasm video
@@ -108,7 +111,7 @@ function graphStats () {
     document.getElementById("stats").textContent = wasmStats + jsStats;
     percent = Math.round(((perf2 - perf1) / perf1) * 100);
   }
-  if (filter !== 'Normal') {
+  if (filter !== 'Normal' && jsActive) {
     speedDiv.innerText = `Speed Stats: WASM is currently ${percent}% faster than JS`;
   }
   else speedDiv.innerText = 'Speed Stats';
