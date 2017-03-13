@@ -32,10 +32,10 @@ function loadWASM () {
                 _free(mem);
                 return grayScaled;
               };
-              cMath['sobelFilter'] = function(array, width, height) {
+              cMath['sobelFilter'] = function(array, width, height, invert=false) {
                 mem = _malloc(array.length);
                 HEAPU8.set(array, mem);
-                Module._sobelFilter(mem, width, height);
+                Module._sobelFilter(mem, width, height, invert);
                 const filtered = HEAPU8.subarray(mem, mem + array.length);
                 _free(mem);
                 return filtered;
@@ -190,7 +190,7 @@ function jsEdgeManip(data, filt, wid) {
   return data;
 }
 
-function jsConvFilter(data, width, height) {
+function jsConvFilter(data, width, height, invert=false) {
   const out = [];
   let wid = width;
   let hei = height;
@@ -246,6 +246,7 @@ function jsConvFilter(data, width, height) {
                     );
                     var mag = Math.floor(Math.sqrt((newX * newX) + (newY * newY)) >>> 0);
                     if (mag > 255) mag = 255;
+                    if (invert) mag = 255 - mag;
                     data[((wid * y) + x) * 4] = mag;
                     data[((wid * y) + x) * 4 + 1] = mag;
                     data[((wid * y) + x) * 4 + 2] = mag;

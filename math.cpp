@@ -79,7 +79,7 @@ extern "C" {
     return (arr[((width * y) + x)]);
   }
 
-  void sobelFilter(unsigned char* data, int width, int height) {
+  void sobelFilter(unsigned char* data, int width, int height, bool invert=false) {
     int grayData[width * height];
     for (int y = 0; y < height; y++) {
       for (int x = 0; x < width; x++) {
@@ -127,7 +127,8 @@ extern "C" {
         }
         int mag = sqrt((newX * newX) + (newY * newY));
         if (mag > 255) mag = 255;
-        int offset = ((width * y) + x) << 2; //multiply by 4
+        int offset = ((width * y) + x) << 2; //multiply by 
+        if (invert == true) mag = 255 - mag;
         data[offset] = mag;
         data[offset + 1] = mag;
         data[offset + 2] = mag;
