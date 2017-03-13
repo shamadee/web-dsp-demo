@@ -38,8 +38,8 @@ var context2 = canvas2.getContext('2d');
 vid2.addEventListener("loadeddata", function() {
   canvas2.setAttribute('height', vid2.videoHeight);
   canvas2.setAttribute('width', vid2.videoWidth);
-  cw2 = canvas.clientWidth; //usually same as canvas.height
-  ch2 = canvas.clientHeight;
+  cw2 = canvas2.clientWidth; //usually same as canvas.height
+  ch2 = canvas2.clientHeight;
   draw2();
 });
 
