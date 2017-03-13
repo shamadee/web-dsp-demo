@@ -1,4 +1,5 @@
 let m = {};
+let jsActive = true;
 let filter = 'Normal', prevFilter;
 let t0, t1 = Infinity, t2, t3 = Infinity, line1, line2, perf1, perf2, perfStr1, perfStr2, avg1, avg2, wasmStats, jsStats, percent=0;
 let counter=0, sum1=0, sum2=0;
@@ -18,6 +19,10 @@ loadWASM()
       graphStats();
     })();
 });
+
+function disableJS() {
+  jsActive = false;
+}
 
 //wasm video
 var vid = document.getElementById('v');
@@ -194,7 +199,7 @@ function setPixels (filter, language) {
         pixels.data.set(m.convFilter(pixels.data, kernel, 1, 1.99, vid.videoWidth, vid.videoHeight)); 
         break;      
     }
-  } else {
+  } else if (jsActive) {
     switch (filter) {
       case 'Grayscale': pixels2.data.set(jsGrayScale(pixels2.data)); break;
       case 'Brighten': pixels2.data.set(jsBrighten(pixels2.data)); break;
