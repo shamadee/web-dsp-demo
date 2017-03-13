@@ -1,6 +1,6 @@
 let m = {};
-let filter = 'Normal';
-let t0, t1 = Infinity, t2, t3 = Infinity, line1, line2, perf1, perf2, perfStr1, perfStr2, wasmStats, jsStats, percent=0;
+let filter = 'Normal', prevFilter;
+let t0, t1 = Infinity, t2, t3 = Infinity, line1, line2, perf1, perf2, perfStr1, perfStr2, avg1, avg2, wasmStats, jsStats, percent=0;
 let counter=0, sum1=0, sum2=0;
 let pixels, pixels2;
 let cw, cw2, ch, ch2;
@@ -72,6 +72,17 @@ function draw2() {
 
 //STATS, Buttons adding, SetPixels function stuff starts below
 function graphStats () {
+  // reset values;
+  if (prevFilter !== filter) {
+    perf1 = 0;
+    perf2 = 0;
+    sum1 = 0;
+    sum2 = 0;
+    avg1 = 0;
+    avg2 = 0;
+    counter = 0;
+  };
+
   if (filter !== 'Normal') {
     perf1 = t1 - t0;
     perf2 = t3 - t2;
@@ -79,8 +90,8 @@ function graphStats () {
     sum2 += perf2;
     counter += 1;
     if (counter % 5 === 0) {
-      let avg1 = sum1 / counter;
-      let avg2 = sum2 / counter;
+      avg1 = sum1 / counter;
+      avg2 = sum2 / counter;
       avgDisplay.innerText = `Average computation time WASM: ${avg1.toString().slice(0, 4)} ms, JS: ${avg2.toString().slice(0, 4)} ms`;
       line1.append(new Date().getTime(), 1000 / perf1);
       line2.append(new Date().getTime(), 1000 / perf2);
@@ -96,6 +107,8 @@ function graphStats () {
     speedDiv.innerText = `Speed Stats: WASM is currently ${percent}% faster than JS`;
   }
   else speedDiv.innerText = 'Speed Stats';
+
+  prevFilter = filter;
   setTimeout(graphStats, 500);
 }
 
@@ -116,7 +129,7 @@ function createStats() {
     },
   });
   // send smoothie data to canvas
-  smoothie.streamTo(document.getElementById('statsCanvas'), 1000);
+  smoothie.streamTo(document.getElementById('statsCanvas'), 500);
   
   // declare smoothie timeseries 
   line1 = new TimeSeries();
