@@ -72,14 +72,17 @@ function loadWASM () {
                 _free(mem);
                 return edgeManip;
               };
-              cMath['convFilter'] = function(array, kernel, count, divisor, width, height) {
+              // cMath['convFilter'] = function(array, kernel, count, divisor, width, height) {
+                cMath['convFilter'] = function(array, width, height, kernel, divisor, bias=0, count=1) {
                 const arLen = array.length;
                 const memAdr = _malloc(arLen * Float32Array.BYTES_PER_ELEMENT);
                 HEAPF32.set(array, memAdr / Float32Array.BYTES_PER_ELEMENT);
                 const kerLen = kernel.length;
                 const memKrn = _malloc(kerLen * Float32Array.BYTES_PER_ELEMENT);
                 HEAPF32.set(kernel, memKrn / Float32Array.BYTES_PER_ELEMENT);
-                Module._convFilter(memAdr, width, height, memKrn, 1, divisor, 0.0, count);
+                
+                Module._convFilter(memAdr, width, height, memKrn, 1, divisor, bias, count);
+                
                 const filtered = HEAPF32.subarray(memAdr / Float32Array.BYTES_PER_ELEMENT, memAdr / Float32Array.BYTES_PER_ELEMENT + arLen);
                 _free(memAdr);
                 _free(memKrn);
@@ -106,7 +109,7 @@ function jsFallback() {
   m['convFilter'] = jsMatrixConvolution;
 }
 
-function jsMatrixConvolution(data, width, height, matrix, factor, bias, count) {
+function jsMatrixConvolution(data, width, height, matrix, divisor, bias, count) {
   for (let i = 0; i < count; i += 1) {
     const w = matrix[0].length;
     const h = matrix.length;
@@ -114,7 +117,7 @@ function jsMatrixConvolution(data, width, height, matrix, factor, bias, count) {
 
     for (let y = 0; y < height - 1; y += 1) {
       for (let x = 0; x < width - 1; x += 1) {
-        const px = (y * width + x) *4;  // pixel index
+        const px = (y * width + x) * 4;  // pixel index
         let r = 0, g = 0, b = 0;
 
         for (let cy = 0; cy < w; ++cy) {
@@ -126,9 +129,9 @@ function jsMatrixConvolution(data, width, height, matrix, factor, bias, count) {
           }
         }
 
-        data[px + 0] = factor * r + bias;
-        data[px + 1] = factor * g + bias;
-        data[px + 2] = factor * b + bias;
+        data[px + 0] = (1 / divisor) * r + bias;
+        data[px + 1] = (1 / divisor) * g + bias;
+        data[px + 2] = (1 / divisor) * b + bias;
       }
     }
   }

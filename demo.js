@@ -21,7 +21,7 @@ loadWASM()
 });
 
 function disableJS() {
-  jsActive = false;
+  jsActive = !jsActive;
 }
 
 //wasm video
@@ -158,14 +158,18 @@ function createStats() {
 
 function addButtons (filtersArr) {
   let filters = ['Normal', 'Grayscale', 'Brighten', 'Invert', 'Noise', 'Sunset', 
-                 'Analog TV', 'Emboss', 'Super Edge', 'Super Edge Inv', 'Gaussian Blur', 'Sharpen', 'Sharpen2']
+                 'Analog TV', 'Emboss', 'Super Edge', 'Super Edge Inv',
+                 'Gaussian Blur', 'Sharpen', 'Sharpen2'];
   let buttonDiv = document.createElement('div');
   buttonDiv.id = 'buttons';
   document.body.appendChild(buttonDiv);
   for (let i = 0; i < filters.length; i++) {
     let button = document.createElement('button');
     button.innerText = filters[i];
-    button.addEventListener('click', () => filter = filters[i]);
+    button.addEventListener('click', function() {
+      filter = filters[i];
+      this.classList.add('selected');
+    });
     buttonDiv.appendChild(button);
   }
 }
@@ -186,17 +190,20 @@ function setPixels (filter, language) {
       case 'Gaussian Blur':
         kernel = [1, 1, 1, 1, 1, 1, 1, 1, 1];
         divisor = kernel.reduce((a, b) => a + b, 0) || 1;
-        pixels.data.set(m.convFilter(pixels.data, kernel, 3, divisor, vid.videoWidth, vid.videoHeight)); 
+        // pixels.data.set(m.convFilter(pixels.data, kernel, 3, divisor, vid.videoWidth, vid.videoHeight)); 
+        pixels.data.set(m.convFilter(pixels.data, vid.videoWidth, vid.videoHeight, kernel, divisor, 0, 3));
         break;
       case 'Sharpen':
         kernel = [-1, -1, -1, -1,  8, -1, -1, -1, -1];
         divisor = kernel.reduce((a, b) => a + b, 0) || 1;
-        pixels.data.set(m.convFilter(pixels.data, kernel, 1, divisor, vid.videoWidth, vid.videoHeight)); 
+        // pixels.data.set(m.convFilter(pixels.data, kernel, 1, divisor, vid.videoWidth, vid.videoHeight));
+        pixels.data.set(m.convFilter(pixels.data, vid.videoWidth, vid.videoHeight, kernel, divisor, 0, 1));
         break;
       case 'Sharpen2':
         kernel = [0, -1, 0, -1, 5, -1, 0, -1, 0];
         divisor = kernel.reduce((a, b) => a + b, 0) || 1;
-        pixels.data.set(m.convFilter(pixels.data, kernel, 1, 1.99, vid.videoWidth, vid.videoHeight)); 
+        // pixels.data.set(m.convFilter(pixels.data, kernel, 1, 1.99, vid.videoWidth, vid.videoHeight));
+        pixels.data.set(m.convFilter(pixels.data, vid.videoWidth, vid.videoHeight, kernel, 1.99, 0, 1));
         break;      
     }
   } else if (jsActive) {
@@ -212,7 +219,7 @@ function setPixels (filter, language) {
       case 'Super Edge Inv': pixels2.data.set(jsConvFilter(pixels2.data, vid2.videoWidth, vid2.videoHeight, true)); break;
       case 'Gaussian Blur': 
         kernel = [[1, 1, 1], [1, 1, 1], [1, 1, 1]];
-        pixels2.data.set(jsMatrixConvolution(pixels2.data, vid2.videoWidth, vid2.videoHeight, kernel, 1/9, 0, 3));
+        pixels2.data.set(jsMatrixConvolution(pixels2.data, vid2.videoWidth, vid2.videoHeight, kernel, 9, 0, 3));
         break;
       case 'Sharpen':
         kernel = [[-1, -1, -1], [-1,  8, -1], [-1, -1, -1]];
@@ -220,7 +227,7 @@ function setPixels (filter, language) {
         break;
       case 'Sharpen2':
         kernel = [[0, -1, 0], [-1, 5, -1], [0, -1, 0]];
-        pixels2.data.set(jsMatrixConvolution(pixels2.data, vid2.videoWidth, vid2.videoHeight, kernel, 1/1.99, 0, 1));
+        pixels2.data.set(jsMatrixConvolution(pixels2.data, vid2.videoWidth, vid2.videoHeight, kernel, 1.99, 0, 1));
         break;
     }
   }

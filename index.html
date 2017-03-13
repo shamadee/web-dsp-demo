@@ -6,26 +6,28 @@
 </head>
 <body>
   <h1>WASM Example</h1>
-  <canvas id="c" width="640" height="360"></canvas>
-  <video id="v" controls="" loop="" autoplay="" style="display:none;"> 
-	<source src="media/vid.mp4" type="video/mp4"/> 
-  </video>
-  <div id = "statsContainer">
-  <h2>Speed Stats</h2>
-  <p id="avg"></p>
-  <div id = "stats">Loading..</div>
-  <h3>Frame Rate. WASM = Green; JS = Blue;</h3>
-  <canvas id = "statsCanvas"></canvas>
+  <div id='wasm-container'>
+    <canvas id="c" width="640" height="360"></canvas>
+    <video id="v" controls="" loop="" autoplay="" style="display:none;"> -->
+      <source src="media/vid.mp4" type="video/mp4"/> 
+    </video>
   </div>
-  </br>
-  <button onclick="disableJS()">Disable Javascript</button>
   <div id='js-container'>
     <h1>JS Example</h1>
     <canvas id="c2" width="640" height="360"></canvas>
     <video id="v2" controls="" loop="" autoplay="" style="display:none;"> 
-    <source src="media/vid.mp4" type="video/mp4"/> 
+      <source src="media/vid.mp4" type="video/mp4"/> 
     </video>
   </div>
+  <div id = "statsContainer">
+    <h2>Speed Stats</h2>
+    <p id="avg"></p>
+    <div id = "stats">Loading..</div>
+    <h3>Frame Rate. WASM = Green; JS = Blue;</h3>
+    <canvas id = "statsCanvas"></canvas>
+    <button id="jsButton" onclick="disableJS()">Disable Javascript</button>
+  </div>
+  </br>
   <script type="text/javascript" src="smoothie.js"></script>
   <script src='wasmMath.js'></script>
   <script src='demo.js'></script>
