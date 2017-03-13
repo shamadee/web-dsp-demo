@@ -1,14 +1,23 @@
-# load-wasm
 
-This is a sample library using WebAssembly. To compile the C library download emscripten and run in terminal:
+## A client-side DSP library utilizing the power of WebAssembly (.wasm)
 
-emcc -o cMath.js math.cpp -lm -O3 -s WASM=1 -s EXPORTED_FUNCTIONS="['_fib', '_doubler', '_manipArr', '_grayScale']" -s BINARYEN_IMPRECISE=1 -s "BINARYEN_METHOD='native-wasm,asmjs'"
+### Dropping in WebAssembly
+Use loadWASM() to fetch the WebAssembly module as a promise object.
+If WebAssembly is not supported in the browser, use jsFallback() in the catch block
+```javascript
+var m = {};
+loadWasm().then(module => {
+  m = module;
+}).catch((err => {
+  jsFallback();
+}).then(() => {
+  //things to execute on page load only after module is loaded
+})
+```
 
-
-Then open test.html in your browser (Chrome Canary or Firefox Developer Edition)
-
-
-TODOS:
-
-  - mention alternatives to promise loading mechanism
-  - explain naming convention
+Now you can call a WebAssembly method with plain JS:
+```javascript
+pixels = context.getImageData(0,0,width,height);
+button.addEventListener('click', () => {
+  m.invert(pixels);
+})
