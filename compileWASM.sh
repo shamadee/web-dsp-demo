@@ -8,7 +8,7 @@ source "$EMSDK_ENV"
 
 # add exported C/C++ functions here
 CPP_FUNCS="[ 
-'_manipArr', 
+ '_manipArr', 
  '_manipSingle', 
  '_sobelFilter', 
  '_convFilter', 
@@ -19,7 +19,7 @@ CPP_FUNCS="[
  '_invert', 
  '_noise', 
  '_edgeManip' 
- ]" 
+]" 
 
 echo "compiling C++ to WASM ..."
 emcc -o cMath.js math.cpp -lm -O3 -s WASM=1 \
