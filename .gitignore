@@ -1,8 +1,4 @@
 node_modules/
 media/
 .vscode/
-cMath.asm.js
-cMath.js
-cMath.js.mem
-cMath.wasm
 testCPP
