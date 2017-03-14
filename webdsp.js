@@ -2,7 +2,7 @@ var Module = {};
 function loadWASM () {
   const cMath = {};
   return new Promise((resolve, reject) => {
-    fetch('cMath.wasm')
+    fetch('webdsp_c.wasm')
         .then(response => {
           return response.arrayBuffer();
         })
@@ -10,7 +10,7 @@ function loadWASM () {
             Module.wasmBinary = buffer;
 
             var script = document.createElement('script');
-            script.src = 'cMath.js';
+            script.src = 'webdsp_c.js';
 
             script.onload = function () {
               if (!WebAssembly.instantiate) {
@@ -19,9 +19,6 @@ function loadWASM () {
                 reject(newObj);
               }
               console.log('Emscripten boilerplate loaded.');
-              
-              cMath['doubler'] = _doubler;
-              cMath['fib'] = _fib;
 
               //filters
               cMath['grayScale'] = function(array) {
@@ -79,10 +76,8 @@ function loadWASM () {
                 HEAPF32.set(array, memAdr / Float32Array.BYTES_PER_ELEMENT);
                 const kerLen = kernel.length;
                 const memKrn = _malloc(kerLen * Float32Array.BYTES_PER_ELEMENT);
-                HEAPF32.set(kernel, memKrn / Float32Array.BYTES_PER_ELEMENT);
-                
+                HEAPF32.set(kernel, memKrn / Float32Array.BYTES_PER_ELEMENT);                
                 Module._convFilter(memAdr, width, height, memKrn, 1, divisor, bias, count);
-                
                 const filtered = HEAPF32.subarray(memAdr / Float32Array.BYTES_PER_ELEMENT, memAdr / Float32Array.BYTES_PER_ELEMENT + arLen);
                 _free(memAdr);
                 _free(memKrn);
