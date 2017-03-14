@@ -2,7 +2,7 @@
 ## A client-side DSP library utilizing the power of WebAssembly (.wasm)
 
 ###Install
-Drop the 'lib' folder in to your project and only load the JS  library in a script tag
+Drop the 'lib' folder in to your project & only load the JS  library in a script tag
 ```html
 <script src = '/lib/webdsp.js' type = 'text/javascript'>
 ```
