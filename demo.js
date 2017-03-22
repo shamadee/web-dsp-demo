@@ -22,9 +22,8 @@ loadWASM()
 
 function disableJS() {
   jsActive = !jsActive;
-  if (jsActive) document.getElementById('jsButton').innerHTML = 'Disable Javascript';
-  else document.getElementById('jsButton').innerHTML = 'Enable Javascript';
-
+  if (!jsActive) document.getElementById('jsButton').innerHTML = 'Enable JavaScript';
+  else document.getElementById('jsButton').innerHTML = 'Disable JavaScript';
 }
 
 //wasm video
