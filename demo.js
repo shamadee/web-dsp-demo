@@ -8,10 +8,8 @@ let cw, cw2, ch, ch2;
 let speedDiv = document.getElementsByTagName('h2')[0];
 let avgDisplay = document.getElementById('avg');
 loadWASM()
-  .then(cMath => {
-    m = cMath;
-}).catch((obj) => {
-  jsFallback();
+  .then(module => {
+    m = module;
 }).then(() => {
     window.onload = (() => { 
       createStats();
@@ -100,8 +98,8 @@ function graphStats () {
       avg1 = sum1 / counter;
       avg2 = sum2 / counter;
       avgDisplay.innerText = `Average computation time WASM: ${avg1.toString().slice(0, 4)} ms, JS: ${avg2.toString().slice(0, 4)} ms`;
-      line1.append(new Date().getTime(), 1000 / perf1);
-      line2.append(new Date().getTime(), 1000 / perf2);
+      line1.append(new Date().getTime(), 500 / perf1);
+      line2.append(new Date().getTime(), 500 / perf2);
     }
     perfStr1 = perf1.toString().slice(0, 4);
     perfStr2 = perf2.toString().slice(0, 5);
@@ -184,52 +182,52 @@ function setPixels (filter, language) {
       case 'Brighten': pixels.data.set(m.brighten(pixels.data)); break;
       case 'Invert': pixels.data.set(m.invert(pixels.data)); break;
       case 'Noise': pixels.data.set(m.noise(pixels.data)); break;
-      case 'Sunset': pixels.data.set(m.edgeManip(pixels.data, 4, cw)); break;
-      case 'Analog TV': pixels.data.set(m.edgeManip(pixels.data, 7, cw)); break;
-      case 'Emboss': pixels.data.set(m.edgeManip(pixels.data, 1, cw)); break;
-      case 'Super Edge': pixels.data.set(m.sobelFilter(pixels.data, vid.videoWidth, vid.videoHeight)); break;
-      case 'Super Edge Inv': pixels.data.set(m.sobelFilter(pixels.data, vid.videoWidth, vid.videoHeight, true)); break;
+      case 'Sunset': pixels.data.set(m.multiFilter(pixels.data, cw, 4)); break;
+      case 'Analog TV': pixels.data.set(m.multiFilter(pixels.data, cw, 7)); break;
+      case 'Emboss': pixels.data.set(m.multiFilter(pixels.data, cw, 1)); break;
+      case 'Super Edge': pixels.data.set(m.sobelFilter(pixels.data, cw, ch)); break;
+      case 'Super Edge Inv': pixels.data.set(m.sobelFilter(pixels.data, cw, ch, true)); break;
       case 'Gaussian Blur':
-        kernel = [1, 1, 1, 1, 1, 1, 1, 1, 1];
-        divisor = kernel.reduce((a, b) => a + b, 0) || 1;
-        // pixels.data.set(m.convFilter(pixels.data, kernel, 3, divisor, vid.videoWidth, vid.videoHeight)); 
-        pixels.data.set(m.convFilter(pixels.data, vid.videoWidth, vid.videoHeight, kernel, divisor, 0, 3));
+        kernel = [[1, 1, 1], [1, 1, 1], [1, 1, 1]];
+        divisor = 9;
+        pixels.data.set(m.convFilter(pixels.data, cw, ch, kernel, divisor, 0, 3));
         break;
       case 'Sharpen':
-        kernel = [-1, -1, -1, -1,  8, -1, -1, -1, -1];
-        divisor = kernel.reduce((a, b) => a + b, 0) || 1;
-        // pixels.data.set(m.convFilter(pixels.data, kernel, 1, divisor, vid.videoWidth, vid.videoHeight));
-        pixels.data.set(m.convFilter(pixels.data, vid.videoWidth, vid.videoHeight, kernel, divisor, 0, 1));
+        kernel = [[-1, -1, -1], [-1,  8, -1], [-1, -1, -1]];
+        divisor = 1;
+        pixels.data.set(m.convFilter(pixels.data, cw, ch, kernel, divisor));
         break;
       case 'Sharpen2':
-        kernel = [0, -1, 0, -1, 5, -1, 0, -1, 0];
-        divisor = kernel.reduce((a, b) => a + b, 0) || 1;
-        // pixels.data.set(m.convFilter(pixels.data, kernel, 1, 1.99, vid.videoWidth, vid.videoHeight));
-        pixels.data.set(m.convFilter(pixels.data, vid.videoWidth, vid.videoHeight, kernel, 1.99, 0, 1));
+        kernel = [[0, -1, 0], [-1, 5, -1], [0, -1, 0]];
+        divisor = 2;
+        pixels.data.set(m.convFilter(pixels.data, cw, ch, kernel, divisor));
         break;      
     }
   } else if (jsActive) {
     switch (filter) {
-      case 'Grayscale': pixels2.data.set(jsGrayScale(pixels2.data)); break;
-      case 'Brighten': pixels2.data.set(jsBrighten(pixels2.data)); break;
-      case 'Invert': pixels2.data.set(jsInvert(pixels2.data)); break;
-      case 'Noise': pixels2.data.set(jsNoise(pixels2.data)); break;
-      case 'Sunset': pixels2.data.set(jsEdgeManip(pixels2.data, 4, cw2)); break;
-      case 'Analog TV': pixels2.data.set(jsEdgeManip(pixels2.data, 7, cw2)); break;
-      case 'Emboss': pixels2.data.set(jsEdgeManip(pixels2.data, 1, cw2)); break;
-      case 'Super Edge': pixels2.data.set(jsConvFilter(pixels2.data, vid2.videoWidth, vid2.videoHeight)); break;
-      case 'Super Edge Inv': pixels2.data.set(jsConvFilter(pixels2.data, vid2.videoWidth, vid2.videoHeight, true)); break;
+      case 'Grayscale': pixels2.data.set(js_grayScale(pixels2.data)); break;
+      case 'Brighten': pixels2.data.set(js_brighten(pixels2.data)); break;
+      case 'Invert': pixels2.data.set(js_invert(pixels2.data)); break;
+      case 'Noise': pixels2.data.set(js_noise(pixels2.data)); break;
+      case 'Sunset': pixels2.data.set(js_multiFilter(pixels2.data, cw2, 4)); break;
+      case 'Analog TV': pixels2.data.set(js_multiFilter(pixels2.data, cw2, 7)); break;
+      case 'Emboss': pixels2.data.set(js_multiFilter(pixels2.data, cw2, 1)); break;
+      case 'Super Edge': pixels2.data.set(js_sobelFilter(pixels2.data, cw2, ch2)); break;
+      case 'Super Edge Inv': pixels2.data.set(js_sobelFilter(pixels2.data, cw2, ch2, true)); break;
       case 'Gaussian Blur': 
         kernel = [[1, 1, 1], [1, 1, 1], [1, 1, 1]];
-        pixels2.data.set(jsMatrixConvolution(pixels2.data, vid2.videoWidth, vid2.videoHeight, kernel, 9, 0, 3));
+        divisor = 9;
+        pixels2.data.set(js_convFilter(pixels2.data, cw2, ch2, kernel, divisor, 0, 3));
         break;
       case 'Sharpen':
         kernel = [[-1, -1, -1], [-1,  8, -1], [-1, -1, -1]];
-        pixels2.data.set(jsMatrixConvolution(pixels2.data, vid2.videoWidth, vid2.videoHeight, kernel, 1, 0, 1));
+        divisor = 1;
+        pixels2.data.set(js_convFilter(pixels2.data, cw2, ch2, kernel, divisor));
         break;
       case 'Sharpen2':
         kernel = [[0, -1, 0], [-1, 5, -1], [0, -1, 0]];
-        pixels2.data.set(jsMatrixConvolution(pixels2.data, vid2.videoWidth, vid2.videoHeight, kernel, 1.99, 0, 1));
+        divisor = 2;
+        pixels2.data.set(js_convFilter(pixels2.data, cw2, ch2, kernel, divisor));
         break;
     }
   }

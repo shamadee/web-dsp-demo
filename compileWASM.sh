@@ -7,15 +7,14 @@ EMSDK_ENV=$(find "$BASEDIR" -type f -name "emsdk_env.sh")
 source "$EMSDK_ENV"
 
 # add exported C/C++ functions here
-CPP_FUNCS="[ 
- '_sobelFilter', 
- '_convFilter', 
- '_doubler', 
- '_grayScale', 
- '_brighten', 
- '_invert', 
- '_noise', 
- '_edgeManip' 
+CPP_FUNCS="[
+ '_grayScale',
+ '_brighten',
+ '_invert',
+ '_noise',
+ '_multiFilter',
+ '_sobelFilter',
+ '_convFilter',
 ]" 
 
 echo "compiling C++ to WASM ..."
