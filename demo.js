@@ -161,7 +161,7 @@ function createStats() {
 function addButtons (filtersArr) {
   let filters = ['Normal', 'Grayscale', 'Brighten', 'Invert', 'Noise', 'Sunset', 
                  'Analog TV', 'Emboss', 'Super Edge', 'Super Edge Inv',
-                 'Gaussian Blur', 'Sharpen', 'Uber Sharpen', 'Clarity', 'Good Morning', 'Acid', 'Urple', 'Forest', 'Romance', 'Hippo', 'Longhorn', 'Underground', 'Rooster', 'Mist', 'Tingle', 'Bacteria'];
+                 'Gaussian Blur', 'Sharpen', 'Uber Sharpen', 'Clarity', 'Good Morning', 'Acid', 'Urple', 'Forest', 'Romance', 'Hippo', 'Longhorn', 'Underground', 'Rooster', 'Mist', 'Tingle', 'Bacteria', 'Dewdrops', 'Color Destruction'];
   let buttonDiv = document.createElement('div');
   buttonDiv.id = 'buttons';
   document.body.appendChild(buttonDiv);
@@ -206,7 +206,8 @@ function setPixels (filter, language) {
       case 'Mist': pixels.data.set(wam.mist(pixels.data, cw)); break;
       case 'Tingle': pixels.data.set(wam.tingle(pixels.data, cw)); break;
       case 'Bacteria': pixels.data.set(wam.bacteria(pixels.data, cw)); break;
-
+      case 'Dewdrops': pixels.data.set(wam.dewdrops(pixels.data, cw, ch)); break;
+      case 'Color Destruction': pixels.data.set(wam.destruction(pixels.data, cw, ch)); break;
     }
   } else if (jsActive) {
     switch (filter) {
