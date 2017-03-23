@@ -1,4 +1,5 @@
-node_modules/
-media/
 .vscode/
-testCPP
+lib/webdsp_c.js
+lib/webdsp_c.wasm
+media/
+node_modules/
