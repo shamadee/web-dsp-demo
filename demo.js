@@ -215,25 +215,14 @@ function setPixels (filter, language) {
       case 'Brighten': pixels2.data.set(js_brighten(pixels2.data)); break;
       case 'Invert': pixels2.data.set(js_invert(pixels2.data)); break;
       case 'Noise': pixels2.data.set(js_noise(pixels2.data)); break;
-      case 'Sunset': pixels2.data.set(js_multiFilter(pixels2.data, cw2, 4)); break;
-      case 'Analog TV': pixels2.data.set(js_multiFilter(pixels2.data, cw2, 7)); break;
-      case 'Emboss': pixels2.data.set(js_multiFilter(pixels2.data, cw2, 1)); break;
+      case 'Sunset': pixels2.data.set(js_sunset(pixels2.data, cw2)); break;
+      case 'Analog TV': pixels2.data.set(js_analog(pixels2.data, cw2)); break;
+      case 'Emboss': pixels2.data.set(js_emboss(pixels2.data, cw2)); break;
       case 'Super Edge': pixels2.data.set(js_sobelFilter(pixels2.data, cw2, ch2)); break;
       case 'Super Edge Inv': pixels2.data.set(js_sobelFilter(pixels2.data, cw2, ch2, true)); break;
-      case 'Gaussian Blur': 
-        kernel = [[1, 1, 1], [1, 1, 1], [1, 1, 1]];
-        divisor = 9;
-        pixels2.data.set(js_convFilter(pixels2.data, cw2, ch2, kernel, divisor, 0, 3));
-        break;
-      case 'Sharpen':
-        kernel = [[0, -1, 0], [-1, 5, -1], [0, -1, 0]];
-        divisor = 2;
-        pixels2.data.set(js_convFilter(pixels2.data, cw2, ch2, kernel, divisor));
-        break;
-      case 'Uber Sharpen':
-        kernel = [[-1, -1, -1], [-1,  8, -1], [-1, -1, -1]];
-        divisor = 1;
-        pixels2.data.set(js_convFilter(pixels2.data, cw2, ch2, kernel, divisor));
+      case 'Gaussian Blur': pixels2.data.set(js_blur(pixels2.data, cw2, ch2));break;
+      case 'Sharpen': pixels2.data.set(js_sharpen(pixels2.data, cw2, ch2)); break;
+      case 'Uber Sharpen': pixels2.data.set(js_strongSharpen(pixels2.data, cw2, ch2));
         break;
     }
   }
