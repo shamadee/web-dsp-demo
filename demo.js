@@ -1,6 +1,6 @@
 let wam;
 let jsActive = true;
-let filter = 'Normal', prevFilter;
+let filter = 'Sunset', prevFilter;
 let t0, t1 = Infinity, t2, t3 = Infinity, line1, line2, perf1, perf2, perfStr1, perfStr2, avg1, avg2, wasmStats, jsStats, percent=0;
 let counter=0, sum1=0, sum2=0;
 let pixels, pixels2;
@@ -161,7 +161,7 @@ function createStats() {
 function addButtons (filtersArr) {
   let filters = ['Normal', 'Grayscale', 'Brighten', 'Invert', 'Noise', 'Sunset', 
                  'Analog TV', 'Emboss', 'Super Edge', 'Super Edge Inv',
-                 'Gaussian Blur', 'Sharpen', 'Uber Sharpen', 'Clarity', 'Good Morning', 'Acid', 'Urple', 'Forest', 'Romance', 'Hippo', 'Longhorn', 'Underground', 'Rooster', 'Mist', 'Tingle', 'Bacteria'];
+                 'Gaussian Blur', 'Sharpen', 'Uber Sharpen', 'Clarity', 'Good Morning', 'Acid', 'Urple', 'Forest', 'Romance', 'Hippo', 'Longhorn', 'Underground', 'Rooster', 'Mist', 'Tingle', 'Bacteria', 'Dewdrops', 'Color Destruction'];
   let buttonDiv = document.createElement('div');
   buttonDiv.id = 'buttons';
   document.body.appendChild(buttonDiv);
@@ -206,7 +206,8 @@ function setPixels (filter, language) {
       case 'Mist': pixels.data.set(wam.mist(pixels.data, cw)); break;
       case 'Tingle': pixels.data.set(wam.tingle(pixels.data, cw)); break;
       case 'Bacteria': pixels.data.set(wam.bacteria(pixels.data, cw)); break;
-
+      case 'Dewdrops': pixels.data.set(wam.dewdrops(pixels.data, cw, ch)); break;
+      case 'Color Destruction': pixels.data.set(wam.destruction(pixels.data, cw, ch)); break;
     }
   } else if (jsActive) {
     switch (filter) {
@@ -214,25 +215,14 @@ function setPixels (filter, language) {
       case 'Brighten': pixels2.data.set(js_brighten(pixels2.data)); break;
       case 'Invert': pixels2.data.set(js_invert(pixels2.data)); break;
       case 'Noise': pixels2.data.set(js_noise(pixels2.data)); break;
-      case 'Sunset': pixels2.data.set(js_multiFilter(pixels2.data, cw2, 4)); break;
-      case 'Analog TV': pixels2.data.set(js_multiFilter(pixels2.data, cw2, 7)); break;
-      case 'Emboss': pixels2.data.set(js_multiFilter(pixels2.data, cw2, 1)); break;
+      case 'Sunset': pixels2.data.set(js_sunset(pixels2.data, cw2)); break;
+      case 'Analog TV': pixels2.data.set(js_analog(pixels2.data, cw2)); break;
+      case 'Emboss': pixels2.data.set(js_emboss(pixels2.data, cw2)); break;
       case 'Super Edge': pixels2.data.set(js_sobelFilter(pixels2.data, cw2, ch2)); break;
       case 'Super Edge Inv': pixels2.data.set(js_sobelFilter(pixels2.data, cw2, ch2, true)); break;
-      case 'Gaussian Blur': 
-        kernel = [[1, 1, 1], [1, 1, 1], [1, 1, 1]];
-        divisor = 9;
-        pixels2.data.set(js_convFilter(pixels2.data, cw2, ch2, kernel, divisor, 0, 3));
-        break;
-      case 'Sharpen':
-        kernel = [[0, -1, 0], [-1, 5, -1], [0, -1, 0]];
-        divisor = 2;
-        pixels2.data.set(js_convFilter(pixels2.data, cw2, ch2, kernel, divisor));
-        break;
-      case 'Uber Sharpen':
-        kernel = [[-1, -1, -1], [-1,  8, -1], [-1, -1, -1]];
-        divisor = 1;
-        pixels2.data.set(js_convFilter(pixels2.data, cw2, ch2, kernel, divisor));
+      case 'Gaussian Blur': pixels2.data.set(js_blur(pixels2.data, cw2, ch2));break;
+      case 'Sharpen': pixels2.data.set(js_sharpen(pixels2.data, cw2, ch2)); break;
+      case 'Uber Sharpen': pixels2.data.set(js_strongSharpen(pixels2.data, cw2, ch2));
         break;
     }
   }
