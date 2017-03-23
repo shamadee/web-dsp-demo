@@ -47,10 +47,10 @@ extern "C" {
       data[i+2] = data[i+2] + random; //b
     }
   }
-  void multiFilter (unsigned char* data, int len, int width, int filterType) {
+  void multiFilter (unsigned char* data, int len, int width, int filterType, int mag = 127, int mult = 2, int adj = 4) {
     for (int i = 0; i < len; i += filterType) {
       if (i % 4 != 3) {
-        data[i] = 127 + 2 * data[i] - data[i + 4] - data[i + width * 4];
+        data[i] = mag + mult * data[i] - data[i + adj] - data[i + width * 4];
       }
     }
   }

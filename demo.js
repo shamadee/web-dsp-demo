@@ -161,7 +161,7 @@ function createStats() {
 function addButtons (filtersArr) {
   let filters = ['Normal', 'Grayscale', 'Brighten', 'Invert', 'Noise', 'Sunset', 
                  'Analog TV', 'Emboss', 'Super Edge', 'Super Edge Inv',
-                 'Gaussian Blur', 'Sharpen', 'Sharpen2'];
+                 'Gaussian Blur', 'Sharpen', 'Uber Sharpen', 'Clarity', 'Good Morning', 'Acid', 'Urple'];
   let buttonDiv = document.createElement('div');
   buttonDiv.id = 'buttons';
   document.body.appendChild(buttonDiv);
@@ -189,21 +189,15 @@ function setPixels (filter, language) {
       case 'Emboss': pixels.data.set(wam.emboss(pixels.data, cw)); break;
       case 'Super Edge': pixels.data.set(wam.sobelFilter(pixels.data, cw, ch)); break;
       case 'Super Edge Inv': pixels.data.set(wam.sobelFilter(pixels.data, cw, ch, true)); break;
-      case 'Gaussian Blur':
-        kernel = [[1, 1, 1], [1, 1, 1], [1, 1, 1]];
-        divisor = 9;
-        pixels.data.set(wam.convFilter(pixels.data, cw, ch, kernel, divisor, 0, 3));
-        break;
-      case 'Sharpen':
-        kernel = [[-1, -1, -1], [-1,  8, -1], [-1, -1, -1]];
-        divisor = 1;
-        pixels.data.set(wam.convFilter(pixels.data, cw, ch, kernel, divisor));
-        break;
-      case 'Sharpen2':
-        kernel = [[0, -1, 0], [-1, 5, -1], [0, -1, 0]];
-        divisor = 2;
-        pixels.data.set(wam.convFilter(pixels.data, cw, ch, kernel, divisor));
-        break;      
+      case 'Gaussian Blur': pixels.data.set(wam.blur(pixels.data, cw, ch)); break;
+      case 'Sharpen': pixels.data.set(wam.sharpen(pixels.data, cw, ch)); break;      
+      case 'Uber Sharpen': pixels.data.set(wam.strongSharpen(pixels.data, cw, ch));
+      break;
+      case 'Clarity': pixels.data.set(wam.clarity(pixels.data, cw, ch)); break;
+      case 'Good Morning': pixels.data.set(wam.goodMorning(pixels.data, cw, ch)); break;
+      case 'Acid': pixels.data.set(wam.acid(pixels.data, cw, ch)); break;
+      case 'Urple': pixels.data.set(wam.urple(pixels.data, cw)); break;
+      
     }
   } else if (jsActive) {
     switch (filter) {
@@ -222,13 +216,13 @@ function setPixels (filter, language) {
         pixels2.data.set(js_convFilter(pixels2.data, cw2, ch2, kernel, divisor, 0, 3));
         break;
       case 'Sharpen':
-        kernel = [[-1, -1, -1], [-1,  8, -1], [-1, -1, -1]];
-        divisor = 1;
-        pixels2.data.set(js_convFilter(pixels2.data, cw2, ch2, kernel, divisor));
-        break;
-      case 'Sharpen2':
         kernel = [[0, -1, 0], [-1, 5, -1], [0, -1, 0]];
         divisor = 2;
+        pixels2.data.set(js_convFilter(pixels2.data, cw2, ch2, kernel, divisor));
+        break;
+      case 'Uber Sharpen':
+        kernel = [[-1, -1, -1], [-1,  8, -1], [-1, -1, -1]];
+        divisor = 1;
         pixels2.data.set(js_convFilter(pixels2.data, cw2, ch2, kernel, divisor));
         break;
     }
