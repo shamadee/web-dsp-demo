@@ -1,6 +1,6 @@
 let wam;
 let jsActive = true;
-let filter = 'Normal', prevFilter;
+let filter = 'Sunset', prevFilter;
 let t0, t1 = Infinity, t2, t3 = Infinity, line1, line2, perf1, perf2, perfStr1, perfStr2, avg1, avg2, wasmStats, jsStats, percent=0;
 let counter=0, sum1=0, sum2=0;
 let pixels, pixels2;
