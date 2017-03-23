@@ -1,4 +1,4 @@
-let m = {};
+let wam;
 let jsActive = true;
 let filter = 'Normal', prevFilter;
 let t0, t1 = Infinity, t2, t3 = Infinity, line1, line2, perf1, perf2, perfStr1, perfStr2, avg1, avg2, wasmStats, jsStats, percent=0;
@@ -9,7 +9,9 @@ let speedDiv = document.getElementsByTagName('h2')[0];
 let avgDisplay = document.getElementById('avg');
 loadWASM()
   .then(module => {
-    m = module;
+    wam = module;
+}).catch((err) => {
+  console.log('Error in fetching module: ', err);
 }).then(() => {
     window.onload = (() => { 
       createStats();
@@ -98,8 +100,8 @@ function graphStats () {
       avg1 = sum1 / counter;
       avg2 = sum2 / counter;
       avgDisplay.innerText = `Average computation time WASM: ${avg1.toString().slice(0, 4)} ms, JS: ${avg2.toString().slice(0, 4)} ms`;
-      line1.append(new Date().getTime(), 1000 / perf1);
-      line2.append(new Date().getTime(), 1000 / perf2);
+      line1.append(new Date().getTime(), 500 / perf1);
+      line2.append(new Date().getTime(), 500 / perf2);
     }
     perfStr1 = perf1.toString().slice(0, 4);
     perfStr2 = perf2.toString().slice(0, 5);
@@ -108,7 +110,7 @@ function graphStats () {
     document.getElementById("stats").textContent = wasmStats + jsStats;
     percent = Math.round(((perf2 - perf1) / perf1) * 100);
   }
-  if (filter !== 'Normal') {
+  if (filter !== 'Normal' && jsActive) {
     speedDiv.innerText = `Speed Stats: WASM is currently ${percent}% faster than JS`;
   }
   else speedDiv.innerText = 'Speed Stats';
@@ -178,29 +180,29 @@ function setPixels (filter, language) {
   if (language === 'wasm') {
     let kernel, divisor;
     switch (filter) {
-      case 'Grayscale': pixels.data.set(m.grayScale(pixels.data)); break;
-      case 'Brighten': pixels.data.set(m.brighten(pixels.data)); break;
-      case 'Invert': pixels.data.set(m.invert(pixels.data)); break;
-      case 'Noise': pixels.data.set(m.noise(pixels.data)); break;
-      case 'Sunset': pixels.data.set(m.multiFilter(pixels.data, cw, 4)); break;
-      case 'Analog TV': pixels.data.set(m.multiFilter(pixels.data, cw, 7)); break;
-      case 'Emboss': pixels.data.set(m.multiFilter(pixels.data, cw, 1)); break;
-      case 'Super Edge': pixels.data.set(m.sobelFilter(pixels.data, cw, ch)); break;
-      case 'Super Edge Inv': pixels.data.set(m.sobelFilter(pixels.data, cw, ch, true)); break;
+      case 'Grayscale': pixels.data.set(wam.grayScale(pixels.data)); break;
+      case 'Brighten': pixels.data.set(wam.brighten(pixels.data)); break;
+      case 'Invert': pixels.data.set(wam.invert(pixels.data)); break;
+      case 'Noise': pixels.data.set(wam.noise(pixels.data)); break;
+      case 'Sunset': pixels.data.set(wam.sunset(pixels.data, cw)); break;
+      case 'Analog TV': pixels.data.set(wam.analogTV(pixels.data, cw)); break;
+      case 'Emboss': pixels.data.set(wam.emboss(pixels.data, cw)); break;
+      case 'Super Edge': pixels.data.set(wam.sobelFilter(pixels.data, cw, ch)); break;
+      case 'Super Edge Inv': pixels.data.set(wam.sobelFilter(pixels.data, cw, ch, true)); break;
       case 'Gaussian Blur':
         kernel = [[1, 1, 1], [1, 1, 1], [1, 1, 1]];
         divisor = 9;
-        pixels.data.set(m.convFilter(pixels.data, cw, ch, kernel, divisor, 0, 3));
+        pixels.data.set(wam.convFilter(pixels.data, cw, ch, kernel, divisor, 0, 3));
         break;
       case 'Sharpen':
         kernel = [[-1, -1, -1], [-1,  8, -1], [-1, -1, -1]];
         divisor = 1;
-        pixels.data.set(m.convFilter(pixels.data, cw, ch, kernel, divisor));
+        pixels.data.set(wam.convFilter(pixels.data, cw, ch, kernel, divisor));
         break;
       case 'Sharpen2':
         kernel = [[0, -1, 0], [-1, 5, -1], [0, -1, 0]];
         divisor = 2;
-        pixels.data.set(m.convFilter(pixels.data, cw, ch, kernel, divisor));
+        pixels.data.set(wam.convFilter(pixels.data, cw, ch, kernel, divisor));
         break;      
     }
   } else if (jsActive) {
