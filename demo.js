@@ -1,6 +1,6 @@
 let wam;
 let jsActive = true;
-let filter = 'Sunset', prevFilter;
+let filter = 'Normal', prevFilter;
 let t0, t1 = Infinity, t2, t3 = Infinity, line1, line2, perf1, perf2, perfStr1, perfStr2, avg1, avg2, wasmStats, jsStats, percent=0;
 let counter=0, sum1=0, sum2=0;
 let pixels, pixels2;
@@ -58,6 +58,7 @@ function draw() {
   if (filter !== 'Normal') {
     t0 = performance.now();
     setPixels(filter, 'wasm');
+    //doublePixels('Longhorn', 'Sunset'); - Order matters, kind of cool 
     t1 = performance.now();
   }
   context.putImageData(pixels, 0, 0);
@@ -162,7 +163,7 @@ function createStats() {
 function addButtons (filtersArr) {
   let filters = ['Normal', 'Grayscale', 'Brighten', 'Invert', 'Noise', 'Sunset', 
                  'Analog TV', 'Emboss', 'Super Edge', 'Super Edge Inv',
-                 'Gaussian Blur', 'Sharpen', 'Uber Sharpen', 'Clarity', 'Good Morning', 'Acid', 'Urple', 'Forest', 'Romance', 'Hippo', 'Longhorn', 'Underground', 'Rooster', 'Mist', 'Tingle', 'Bacteria', 'Dewdrops', 'Color Destruction'];
+                 'Gaussian Blur', 'Sharpen', 'Uber Sharpen', 'Clarity', 'Good Morning', 'Acid', 'Urple', 'Forest', 'Romance', 'Hippo', 'Longhorn', 'Underground', 'Rooster', 'Mist', 'Tingle', 'Bacteria', 'Dewdrops', 'Color Destruction', 'Hulk Edge', 'Ghost', 'Twisted', 'Security'];
   let buttonDiv = document.createElement('div');
   buttonDiv.id = 'buttons';
   document.body.appendChild(buttonDiv);
@@ -209,6 +210,10 @@ function setPixels (filter, language) {
       case 'Bacteria': pixels.data.set(wam.bacteria(pixels.data, cw)); break;
       case 'Dewdrops': pixels.data.set(wam.dewdrops(pixels.data, cw, ch)); break;
       case 'Color Destruction': pixels.data.set(wam.destruction(pixels.data, cw, ch)); break;
+      case 'Hulk Edge': pixels.data.set(wam.hulk(pixels.data, cw)); break;
+      case 'Ghost': pixels.data.set(wam.ghost(pixels.data, cw)); break;
+      case 'Twisted': pixels.data.set(wam.twisted(pixels.data, cw)); break;
+      case 'Security': pixels.data.set(wam.security(pixels.data, cw)); break;
     }
   } else if (jsActive) {
     switch (filter) {
@@ -223,8 +228,30 @@ function setPixels (filter, language) {
       case 'Super Edge Inv': pixels2.data.set(js_sobelFilter(pixels2.data, cw2, ch2, true)); break;
       case 'Gaussian Blur': pixels2.data.set(js_blur(pixels2.data, cw2, ch2));break;
       case 'Sharpen': pixels2.data.set(js_sharpen(pixels2.data, cw2, ch2)); break;
-      case 'Uber Sharpen': pixels2.data.set(js_strongSharpen(pixels2.data, cw2, ch2));
-        break;
+      case 'Uber Sharpen': pixels2.data.set(js_strongSharpen(pixels2.data, cw2, ch2)); break;
+      case 'Clarity': pixels2.data.set(js_clarity(pixels2.data, cw2, ch2)); break;
+      case 'Good Morning': pixels2.data.set(js_goodMorning(pixels2.data, cw2, ch2)); break;
+      case 'Acid': pixels2.data.set(js_acid(pixels2.data, cw2, ch2)); break;
+      case 'Urple': pixels2.data.set(js_urple(pixels2.data, cw2)); break;
+      case 'Forest': pixels2.data.set(js_forest(pixels2.data, cw2)); break;
+      case 'Romance': pixels2.data.set(js_romance(pixels2.data, cw2)); break;
+      case 'Hippo': pixels2.data.set(js_hippo(pixels2.data, cw2)); break;
+      case 'Longhorn': pixels2.data.set(js_longhorn(pixels2.data, cw2)); break;
+      case 'Underground': pixels2.data.set(js_underground(pixels2.data, cw2)); break;
+      case 'Rooster': pixels2.data.set(js_rooster(pixels2.data, cw2)); break;
+      case 'Mist': pixels2.data.set(js_mist(pixels2.data, cw2)); break;
+      case 'Tingle': pixels2.data.set(js_tingle(pixels2.data, cw2)); break;
+      case 'Bacteria': pixels2.data.set(js_bacteria(pixels2.data, cw2)); break;
+      case 'Dewdrops': pixels2.data.set(js_dewdrops(pixels2.data, cw2, ch2)); break;
+      case 'Color Destruction': pixels2.data.set(js_destruction(pixels2.data, cw2, ch2)); break;
+      case 'Hulk Edge': pixels2.data.set(js_hulk(pixels2.data, cw2)); break;
+      case 'Ghost': pixels2.data.set(js_ghost(pixels2.data, cw2)); break;
+      case 'Twisted': pixels2.data.set(js_twisted(pixels2.data, cw2)); break;
+      case 'Security': pixels2.data.set(js_security(pixels2.data, cw2)); break;
     }
   }
+}
+function doublePixels (filter1, filter2) {
+  setPixels(filter1, 'wasm');
+  setPixels(filter2, 'wasm');
 }
