@@ -1,6 +1,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <iostream>
 
 extern "C" {
   int getPixel (int x, int y, int* arr, int width, int height) {
@@ -47,7 +48,7 @@ extern "C" {
       data[i+2] = data[i+2] + random; //b
     }
   }
-  void multiFilter (unsigned char* data, int len, int width, int filterType, int mag = 127, int mult = 2, int adj = 4) {
+  void multiFilter (unsigned char* data, int len, int width, int filterType, int mag, int mult, int adj) {
     for (int i = 0; i < len; i += filterType) {
       if (i % 4 != 3) {
         data[i] = mag + mult * data[i] - data[i + adj] - data[i + width * 4];
