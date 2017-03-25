@@ -10,7 +10,6 @@ let avgDisplay = document.getElementById('avg');
 loadWASM()
   .then(module => {
     wam = module;
-    wam.grayScale([1,2,3,4]);
 }).catch((err) => {
   console.log('Error in fetching module: ', err);
 }).then(() => {
