@@ -8,7 +8,7 @@
   <h1>Video Editor</h1>
   <div id='wasm-container'>
     <canvas id="c" width="640" height="360"></canvas>
-    <video id="v" loop autoplay style="display:none;"> -->
+    <video id="v" loop="false" autoplay style="display:none;"> -->
       <source src="media/vid.mp4" type="video/mp4"/> 
     </video>
   </div>
@@ -27,7 +27,9 @@
     <canvas id = "statsCanvas"></canvas>
     <button id="jsButton" onclick="disableJS()">Disable Javascript</button>
     <button id = "jsCanvas" onclick="disableJsCanvas()">Hide JS Canvas</button>
-    <button id = "playButton" onclick="playVid()">Play</button>
+    <button id = "playButton" onclick="playToggle()">Pause</button>
+    <button id = "loopButton" onclick="loopToggle()">Loop is On</button>
+
 
   </div>
   </br>

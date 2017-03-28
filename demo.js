@@ -64,6 +64,7 @@ vid2.addEventListener("loadeddata", function() {
   ch2 = canvas2.clientHeight;
   draw2();
 });
+
 function draw() {
   if (vid.paused) return false;
   context.drawImage(vid, 0, 0);
@@ -78,22 +79,43 @@ function draw() {
   context.putImageData(pixels, 0, 0);
   testFrame = requestAnimationFrame(draw); 
 }
-function playVid () { // do it for JS and Add Loop
+//case for when loop is off and video pauses at end without someone clicking play button
+vid.onpause = () => document.getElementById('playButton').innerHTML = 'Play';
+
+function playToggle () { //does both vids together
   if (vid.paused) {
+    document.getElementById('playButton').innerHTML = 'Pause';
     vid.play();
     vid2.play()
     draw();
     draw2();
   }
   else {
+    document.getElementById('playButton').innerHTML = 'Play';
     vid.pause()
     vid2.pause()
   }
 }
+function loopToggle () { //does both vids together
+  if (vid.hasAttribute('loop')){
+    document.getElementById('loopButton').innerHTML = 'Loop is Off';
+    vid.removeAttribute('loop')
+    vid2.removeAttribute('loop')
+  }
+  else {
+    if (vid.paused) {
+      playToggle();
+    }
+    document.getElementById('loopButton').innerHTML = 'Loop is On';
+    vid.setAttribute('loop', 'true')
+    vid2.setAttribute('loop', 'true')
+  }
+
+}
 
 //for javascript example
 function draw2() {
-  if (vid.paused) return false;
+  if (vid2.paused) return false;
   context2.drawImage(vid2, 0, 0);
   pixels2 = context2.getImageData(0, 0, vid2.videoWidth, vid2.videoHeight);
   if (filter !== 'Normal') {

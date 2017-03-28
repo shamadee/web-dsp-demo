@@ -35,7 +35,7 @@
   background-color: darkslategray;
 }
 
-#jsButton, #jsCanvas, #playButton {
+#jsButton, #jsCanvas, #playButton, #loopButton {
   color: white;
   background-color: silver;
   border: none;
