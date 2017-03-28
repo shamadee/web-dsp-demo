@@ -35,7 +35,7 @@
   background-color: darkslategray;
 }
 
-#jsButton {
+#jsButton, #jsCanvas, #playButton {
   color: white;
   background-color: silver;
   border: none;
