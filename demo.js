@@ -1,5 +1,7 @@
 let wam;
 let jsActive = true;
+let jsCanvas = true;
+let playing = true;
 let filter = 'Normal', prevFilter;
 let t0, t1 = Infinity, t2, t3 = Infinity, line1, line2, perf1, perf2, perfStr1, perfStr2, avg1, avg2, wasmStats, jsStats, percent=0;
 let counter=0, sum1=0, sum2=0;
@@ -26,6 +28,19 @@ function disableJS() {
   else document.getElementById('jsButton').innerHTML = 'Disable JavaScript';
 }
 
+function disableJsCanvas() {
+  jsCanvas = !jsCanvas;
+  if (jsCanvas) {
+    document.getElementById('jsCanvas').innerHTML = 'Hide JS Canvas';
+    document.getElementById('jsCanvasHeading').style.visibility = "visible";
+    document.getElementById('c2').style.visibility = "visible";
+  }
+  else {
+    document.getElementById('jsCanvas').innerHTML = 'Show JS Canvas';
+    document.getElementById('jsCanvasHeading').style.visibility = "hidden";
+    document.getElementById('c2').style.visibility = "hidden";
+  }
+}
 //wasm video
 var vid = document.getElementById('v');
 var canvas = document.getElementById('c');
@@ -51,6 +66,7 @@ vid2.addEventListener("loadeddata", function() {
 });
 
 function draw() {
+  if (vid.paused) return false;
   context.drawImage(vid, 0, 0);
   // console.log('check', vid, context);
   pixels = context.getImageData(0, 0, vid.videoWidth, vid.videoHeight);
@@ -61,11 +77,45 @@ function draw() {
     t1 = performance.now();
   }
   context.putImageData(pixels, 0, 0);
-  requestAnimationFrame(draw); 
+  testFrame = requestAnimationFrame(draw); 
+}
+//case for when loop is off and video pauses at end without someone clicking play button
+vid.onpause = () => document.getElementById('playButton').innerHTML = 'Play';
+
+function playToggle () { //does both vids together
+  if (vid.paused) {
+    document.getElementById('playButton').innerHTML = 'Pause';
+    vid.play();
+    vid2.play()
+    draw();
+    draw2();
+  }
+  else {
+    document.getElementById('playButton').innerHTML = 'Play';
+    vid.pause()
+    vid2.pause()
+  }
+}
+function loopToggle () { //does both vids together
+  if (vid.hasAttribute('loop')){
+    document.getElementById('loopButton').innerHTML = 'Loop is Off';
+    vid.removeAttribute('loop')
+    vid2.removeAttribute('loop')
+  }
+  else {
+    if (vid.paused) {
+      playToggle();
+    }
+    document.getElementById('loopButton').innerHTML = 'Loop is On';
+    vid.setAttribute('loop', 'true')
+    vid2.setAttribute('loop', 'true')
+  }
+
 }
 
 //for javascript example
 function draw2() {
+  if (vid2.paused) return false;
   context2.drawImage(vid2, 0, 0);
   pixels2 = context2.getImageData(0, 0, vid2.videoWidth, vid2.videoHeight);
   if (filter !== 'Normal') {

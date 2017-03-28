@@ -5,7 +5,7 @@ if [[ :$PATH: != *:"/emsdk":* ]]
 then
   BASEDIR="./../emsdk"
   BASEDIRSHA="./../../../Documents/emsdk"
-  EMSDK_ENV=$(find "$BASEDIRSHA" -type f -name "emsdk_env.sh")
+  EMSDK_ENV=$(find "$BASEDIR" -type f -name "emsdk_env.sh")
   source "$EMSDK_ENV"
 fi
 # add exported C/C++ functions here
