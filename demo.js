@@ -242,8 +242,7 @@ function setPixels (filter, language) {
       case 'Super Edge Inv': pixels.data.set(wam.sobelFilter(pixels.data, cw, ch, true)); break;
       case 'Gaussian Blur': pixels.data.set(wam.blur(pixels.data, cw, ch)); break;
       case 'Sharpen': pixels.data.set(wam.sharpen(pixels.data, cw, ch)); break;      
-      case 'Uber Sharpen': pixels.data.set(wam.strongSharpen(pixels.data, cw, ch));
-      break;
+      case 'Uber Sharpen': pixels.data.set(wam.strongSharpen(pixels.data, cw, ch)); break;
       case 'Clarity': pixels.data.set(wam.clarity(pixels.data, cw, ch)); break;
       case 'Good Morning': pixels.data.set(wam.goodMorning(pixels.data, cw, ch)); break;
       case 'Acid': pixels.data.set(wam.acid(pixels.data, cw, ch)); break;
