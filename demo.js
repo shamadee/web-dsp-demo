@@ -233,7 +233,7 @@ function createStats() {
     },
   });
   // send smoothie data to canvas
-  smoothie.streamTo(document.getElementById('statsCanvas'), 250);
+  smoothie.streamTo(document.getElementById('statsCanvas'), 500);
   
   // declare smoothie timeseries 
   line1 = new TimeSeries();
