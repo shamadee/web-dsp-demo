@@ -48,11 +48,15 @@ function disableJsCanvas() {
 function webcamToggle() {
   media = media === 'video' ? 'webcam' : 'video';
   if(media==='webcam') {
+    controlContent = document.getElementById('controls').innerHTML;
+    timingContent = document.getElementById('timing').innerHTML;
     document.getElementById('webcamButton').innerHTML = 'Switch to Video';
     navigator.mediaDevices.getUserMedia({video: true})
         .then((stream) => {
             vid.srcObject = stream;
             vid2.srcObject = stream;
+            document.getElementById('controls').innerHTML = "Switch back to video for player controls";
+            document.getElementById('timing').innerHTML = '';
         })
         .catch(function(err) {
             media = 'video';
@@ -60,6 +64,8 @@ function webcamToggle() {
         });
   }
   else {
+    document.getElementById('controls').innerHTML = controlContent;
+    document.getElementById('timing').innerHTML = timingContent;
     document.getElementById('webcamButton').innerHTML = 'Switch to Webcam';
     vid.srcObject = null;
     vid2.srcObject = null;
@@ -304,9 +310,9 @@ function createStats() {
 }
 
 function addButtons (filtersArr) {
-  const filters = ['Normal', 'Grayscale', 'Brighten', 'Invert', 'Noise', 'Sunset', 
-                 'Analog TV', 'Emboss', 'Super Edge', 'Super Edge Inv',
-                 'Gaussian Blur', 'Sharpen', 'Uber Sharpen', 'Clarity', 'Good Morning', 'Acid', 'Urple', 'Forest', 'Romance', 'Hippo', 'Longhorn', 'Underground', 'Rooster', 'Moss', 'Mist', 'Tingle', 'Kaleidoscope', 'Bacteria', 'Dewdrops', 'Color Destruction', 'Hulk Edge', 'Ghost', 'Swamp', 'Twisted', 'Security', 'Robbery'];
+  const filters = ['Normal', 'Grayscale', 'Invert', 'Bacteria', 'Sunset', 
+                  'Emboss', 'Super Edge', 'Super Edge Inv',
+                 'Gaussian Blur', 'Moss', 'Robbery', 'Brighten', 'Swamp','Ghost',  'Good Morning', 'Acid', 'Urple', 'Romance', 'Hippo', 'Longhorn', 'Security', 'Underground', 'Rooster', 'Mist', 'Tingle', 'Kaleidoscope', 'Noise', 'Forest', 'Dewdrops', 'Analog TV', 'Color Destruction', 'Hulk Edge', 'Twisted',  'Clarity', 'Sharpen','Uber Sharpen'];
   const buttonDiv = document.createElement('div');
   buttonDiv.id = 'filters';
   const editor = document.getElementById('editor')
@@ -331,11 +337,11 @@ function appendWasmCheck () {
   let before = document.getElementById('editor');
   if ('WebAssembly' in window) {
     p.innerHTML = '(\u2713 \u2713 WebAssembly is supported in your browser)';
+    document.body.insertBefore(p,before);
   }
   else {
-    p.innerHTML = '(\u2639 \u2639 Please upgrade your browser to support WebAssembly)';
+    document.getElementById('statsContainer').innerHTML = '<h2 style="color:#6E8953;">\u2639 \u2639 WebAssembly is not supported in your browser. Please update to the latest version of Chrome or Firefox to enable WebAssembly and compare .WASM & .JS performance</h2>'
   }
-  document.body.insertBefore(p,before);
 }
 
 
