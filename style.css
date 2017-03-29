@@ -5,7 +5,18 @@
   color: #EDD9A8;
 }
 header h1, .wasmCheck {
-  display: inline
+  display: inline;
+  font-family: "Cochin", serif;
+}
+#webcamButton {
+  font-family: "Cochin", serif;
+  margin-top: 3px;
+  font-size: 20px;
+  color: #6E8953;
+  border: 2px solid;
+}
+.wasmCheck {
+  color: #6E8953;
 }
 #editor {
   display: flex;
@@ -17,11 +28,13 @@ header h1, .wasmCheck {
   border: 3px #67594E inset;
 }
 #filters {
+  min-width: 200px;
   width: 200px;
   height: 480px;
-  overflow: scroll;
+  overflow-y: scroll;
+  overflow-x: hidden;
   padding-left: 5px;
-  border: 1px white solid;
+  border: 1px #FFFFC9 solid;
 }
 #controls, #timing {
   display: flex;
@@ -33,6 +46,7 @@ header h1, .wasmCheck {
   margin-top: 10px;
   margin-right: 3px;
   font-size: 20px;
+  border: 2px solid;
 }
 #playButton, #rewind, #fastForward, #loopButton {
   margin-top: 3px;
@@ -52,8 +66,6 @@ header h1, .wasmCheck {
   margin-left: 10px;
   margin-right: 10px;
 }
-
-
 #duration, #slowButton, #fastButton {
   margin-bottom: 10px;
   display: block;
@@ -61,17 +73,17 @@ header h1, .wasmCheck {
 #statsContainer {
   width: 400px;
   margin: 5px;
-  border: 1px white solid;
+  border: 1px #FFFFC9 solid;
   padding: 5px;
 }
-#statsContainer h2 {
-
+#jsButtonDiv {
+  text-align: center;
 }
 #statsCanvas {
   display: block;
 }
 .indFilter {
-  width: 100%;
+  width: 200px;
 }
 .indFilter:hover {
   cursor: pointer;
