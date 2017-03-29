@@ -4,6 +4,9 @@
   background-color: #232323;
   color: #EDD9A8;
 }
+header h1, .wasmCheck {
+  display: inline
+}
 #editor {
   display: flex;
   flex-direction: row;
@@ -25,12 +28,23 @@
   justify-content: space-between;
   width: 725px;
 }
+
+#jsButton, #jsCanvas {
+  margin-top: 10px;
+  margin-right: 3px;
+  font-size: 20px;
+}
 #playButton, #rewind, #fastForward, #loopButton {
+  margin-top: 3px;
+  border: 2px solid;
   height: 64px;
+}
+#slowButton, #fastButton {
+  border: 2px solid;
 }
 
 #vidTime {
-  margin-top: -3px;
+  margin-top: 0px;
   font-size: 48px;
 }
 
@@ -38,9 +52,7 @@
   margin-left: 10px;
   margin-right: 10px;
 }
-#timing {
-  
-}
+
 
 #duration, #slowButton, #fastButton {
   margin-bottom: 10px;
@@ -52,6 +64,9 @@
   border: 1px white solid;
   padding: 5px;
 }
+#statsContainer h2 {
+
+}
 #statsCanvas {
   display: block;
 }
@@ -60,6 +75,9 @@
 }
 .indFilter:hover {
   cursor: pointer;
+  background-color: #8E3C47;
+}
+.selectedFilter {
   background-color: #8E3C47;
 }
 .header {

@@ -21,6 +21,7 @@ loadWASM()
       createStats();
       addButtons();
       graphStats();
+      appendWasmCheck();
     })();
 });
 
@@ -155,7 +156,6 @@ function timeData () {
     return result = `${String(hours)}:${String(minutes)}:${String(seconds)}:${String(milliseconds)}`;
   }
   //add thing for frameNum;  
-  //console.log(vid.currentTime);
   vidTime.innerHTML = `${getTimeCode(vid.currentTime)}`;
   setTimeout(timeData,15);
 }
@@ -295,10 +295,25 @@ function addButtons (filtersArr) {
     filterDiv.innerText = filters[i];
     filterDiv.addEventListener('click', function() {
       filter = filters[i];
-      this.classList.add('selected');
+      //remove any that have it;
+      if(document.getElementsByClassName('selectedFilter')[0]) document.getElementsByClassName('selectedFilter')[0].classList.remove('selectedFilter');
+      this.classList.add('selectedFilter');
     });
     buttonDiv.appendChild(filterDiv);
   }
+}
+
+function appendWasmCheck () {
+  let p = document.createElement('p');
+  p.className = 'wasmCheck';
+  let before = document.getElementById('editor');
+  if ('WebAssembly' in window) {
+    p.innerHTML = '(\u2713 \u2713 WebAssembly is supported in your browser)';
+  }
+  else {
+    p.innerHTML = '(\u2639 \u2639 Please upgrade your browser to support WebAssembly)';
+  }
+  document.body.insertBefore(p,before);
 }
 
 function setPixels (filter, language) {
