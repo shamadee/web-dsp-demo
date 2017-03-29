@@ -15,6 +15,7 @@ CPP_FUNCS="[
  '_invert',
  '_noise',
  '_multiFilter',
+ '_multiFilterFloat',
  '_sobelFilter',
  '_convFilter',
 ]" 

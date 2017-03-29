@@ -1,56 +1,49 @@
 
 * {
   font-family: "Verdana", sans-serif;
-  color: darkslategrey;
-  background-color: #EEE;
+  background-color: #232323;
+  color: #EDD9A8;
+}
+#editor {
+  display: flex;
+  flex-direction: row;
+  border: 3px #67594E inset;
+  padding: 20px;
+}
+#c {
+  border: 3px #67594E inset;
+}
+#filters {
+  display: inline-block;
+  width: 200px;
+  height: 480px;
+  overflow: scroll;
+  padding-left: 5px;
+  border: 1px white solid;
+}
+#middle-col {
   margin-left: 10px;
+  margin-right: 10px;
 }
-
-#statsContainer {
-  position: absolute;
-  /*border: 1px solid green;*/
-  left: 900px;
-  top: 75px;
-  bottom: 200;
-}
-
-#buttons {
-  position: absolute;
-  top: 75px;
-  left: 750px;
-  width: 100;
-}
-
-#buttons button {
-  color: white;
-  background-color: silver;
-  border: none;
-  width: 120;
-  height: 32;
-  padding: 10, 0, 10, 0;
-  margin-top: 5px;
-}
-
-#buttons button:hover {
-  background-color: darkslategray;
-}
-
-#jsButton, #jsCanvas, #playButton, #loopButton {
-  color: white;
-  background-color: silver;
-  border: none;
-  width: 120;
-  height: 32;
-  padding: 10, 0, 10, 0;
-  margin-top: 5px;
-  display: block;
-}
-#jsButton:hover {
-  background-color: red;
+#timing {
+  padding: 5px;
+  border: 1px white solid;
 }
 #stats-canvas {
   display: inline;
 }
-#js-container {
-  float: left;
+#duration, #slowButton, #fastButton {
+  margin-bottom: 10px;
+  display: block;
 }
+
+.indFilter:hover {
+  cursor: pointer;
+  background-color: #8E3C47;
+}
+.header {
+  display: inline;
+}
+#selected
+
+

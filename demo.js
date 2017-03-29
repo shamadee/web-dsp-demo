@@ -3,6 +3,7 @@ let jsActive = true;
 let jsCanvas = true;
 let playing = true;
 let filter = 'Normal', prevFilter;
+let slowSpeed = 0.5, fastSpeed = 2;
 let t0, t1 = Infinity, t2, t3 = Infinity, line1, line2, perf1, perf2, perfStr1, perfStr2, avg1, avg2, wasmStats, jsStats, percent=0;
 let counter=0, sum1=0, sum2=0;
 let pixels, pixels2;
@@ -51,6 +52,8 @@ vid.addEventListener("loadeddata", function() {
   cw = canvas.clientWidth; //usually same as canvas.height
   ch = canvas.clientHeight;
   draw();
+  document.getElementById('duration').innerHTML = `${vid.duration} video length `
+  timeData();
 });
 
 //javascript video
@@ -112,6 +115,49 @@ function loopToggle () { //does both vids together
   }
 
 }
+function timeData () {
+  let timeDiv = document.getElementById('timeData');
+  timeDiv.innerHTML = `${Math.round(vid.currentTime * 10000)/10000} \/ `;
+  setInterval(timeData,500);
+}
+
+function slowToggle () {
+  if (vid.playbackRate === slowSpeed) {
+    document.getElementById('slowButton').innerHTML = 'Toggle Slow Motion';
+    vid.playbackRate = 1;
+    vid2.playbackRate = 1;
+  }
+  else if (vid.playbackRate === 1.0) {
+    document.getElementById('slowButton').innerHTML = 'Toggle Regular Speed';
+    vid.playbackRate = slowSpeed;
+    vid2.playbackRate = slowSpeed;
+  }
+  else if (vid.playbackRate === fastSpeed) {
+    document.getElementById('slowButton').innerHTML = 'Toggle Regular Speed';
+    document.getElementById('fastButton').innerHTML = 'Toggle Fast Motion';
+    vid.playbackRate = slowSpeed;
+    vid2.playbackRate = slowSpeed;
+  }
+}
+function fastToggle () {
+  if (vid.playbackRate === fastSpeed) {
+    document.getElementById('fastButton').innerHTML = 'Toggle Fast Motion';
+    vid.playbackRate = 1;
+    vid2.playbackRate = 1;
+  }
+  else if (vid.playbackRate === 1.0) {
+    document.getElementById('fastButton').innerHTML = 'Toggle Regular Speed';
+    vid.playbackRate = fastSpeed;
+    vid2.playbackRate = fastSpeed;
+  }
+  else if (vid.playbackRate === slowSpeed) {
+    document.getElementById('fastButton').innerHTML = 'Toggle Regular Speed';
+    document.getElementById('slowButton').innerHTML = 'Toggle Slow Motion';
+    vid.playbackRate = fastSpeed;
+    vid2.playbackRate = fastSpeed;
+  }
+}
+
 
 //for javascript example
 function draw2() {
@@ -187,7 +233,7 @@ function createStats() {
     },
   });
   // send smoothie data to canvas
-  smoothie.streamTo(document.getElementById('statsCanvas'), 500);
+  smoothie.streamTo(document.getElementById('statsCanvas'), 250);
   
   // declare smoothie timeseries 
   line1 = new TimeSeries();
@@ -210,20 +256,22 @@ function createStats() {
 }
 
 function addButtons (filtersArr) {
-  let filters = ['Normal', 'Grayscale', 'Brighten', 'Invert', 'Noise', 'Sunset', 
+  const filters = ['Normal', 'Grayscale', 'Brighten', 'Invert', 'Noise', 'Sunset', 
                  'Analog TV', 'Emboss', 'Super Edge', 'Super Edge Inv',
-                 'Gaussian Blur', 'Sharpen', 'Uber Sharpen', 'Clarity', 'Good Morning', 'Acid', 'Urple', 'Forest', 'Romance', 'Hippo', 'Longhorn', 'Underground', 'Rooster', 'Mist', 'Tingle', 'Bacteria', 'Dewdrops', 'Color Destruction', 'Hulk Edge', 'Ghost', 'Twisted', 'Security'];
-  let buttonDiv = document.createElement('div');
-  buttonDiv.id = 'buttons';
-  document.body.appendChild(buttonDiv);
+                 'Gaussian Blur', 'Sharpen', 'Uber Sharpen', 'Clarity', 'Good Morning', 'Acid', 'Urple', 'Forest', 'Romance', 'Hippo', 'Longhorn', 'Underground', 'Rooster', 'Moss', 'Mist', 'Tingle', 'Kaleidoscope', 'Bacteria', 'Dewdrops', 'Color Destruction', 'Hulk Edge', 'Ghost', 'Swamp', 'Twisted', 'Security', 'Robbery'];
+  const buttonDiv = document.createElement('div');
+  buttonDiv.id = 'filters';
+  const editor = document.getElementById('editor')
+  editor.insertBefore(buttonDiv, editor.firstChild);
   for (let i = 0; i < filters.length; i++) {
-    let button = document.createElement('button');
-    button.innerText = filters[i];
-    button.addEventListener('click', function() {
+    let filterDiv = document.createElement('div');
+    filterDiv.className = "indFilter";
+    filterDiv.innerText = filters[i];
+    filterDiv.addEventListener('click', function() {
       filter = filters[i];
       this.classList.add('selected');
     });
-    buttonDiv.appendChild(button);
+    buttonDiv.appendChild(filterDiv);
   }
 }
 
@@ -254,15 +302,19 @@ function setPixels (filter, language) {
       case 'Longhorn': pixels.data.set(wam.longhorn(pixels.data, cw)); break;
       case 'Underground': pixels.data.set(wam.underground(pixels.data, cw)); break;
       case 'Rooster': pixels.data.set(wam.rooster(pixels.data, cw)); break;
+      case 'Moss': pixels.data.set(wam.moss(pixels.data, cw)); break;
       case 'Mist': pixels.data.set(wam.mist(pixels.data, cw)); break;
       case 'Tingle': pixels.data.set(wam.tingle(pixels.data, cw)); break;
+      case 'Kaleidoscope': pixels.data.set(wam.kaleidoscope(pixels.data, cw)); break;
       case 'Bacteria': pixels.data.set(wam.bacteria(pixels.data, cw)); break;
       case 'Dewdrops': pixels.data.set(wam.dewdrops(pixels.data, cw, ch)); break;
       case 'Color Destruction': pixels.data.set(wam.destruction(pixels.data, cw, ch)); break;
       case 'Hulk Edge': pixels.data.set(wam.hulk(pixels.data, cw)); break;
       case 'Ghost': pixels.data.set(wam.ghost(pixels.data, cw)); break;
+      case 'Swamp': pixels.data.set(wam.swamp(pixels.data, cw)); break;
       case 'Twisted': pixels.data.set(wam.twisted(pixels.data, cw)); break;
       case 'Security': pixels.data.set(wam.security(pixels.data, cw)); break;
+      case 'Robbery': pixels.data.set(wam.robbery(pixels.data, cw)); break;
     }
   } else if (jsActive) {
     switch (filter) {
@@ -289,14 +341,18 @@ function setPixels (filter, language) {
       case 'Underground': pixels2.data.set(js_underground(pixels2.data, cw2)); break;
       case 'Rooster': pixels2.data.set(js_rooster(pixels2.data, cw2)); break;
       case 'Mist': pixels2.data.set(js_mist(pixels2.data, cw2)); break;
+      case 'Moss': pixels2.data.set(js_mist(pixels2.data, cw2)); break;
       case 'Tingle': pixels2.data.set(js_tingle(pixels2.data, cw2)); break;
+      case 'Kaleidoscope': pixels2.data.set(js_tingle(pixels2.data, cw2)); break;
       case 'Bacteria': pixels2.data.set(js_bacteria(pixels2.data, cw2)); break;
       case 'Dewdrops': pixels2.data.set(js_dewdrops(pixels2.data, cw2, ch2)); break;
       case 'Color Destruction': pixels2.data.set(js_destruction(pixels2.data, cw2, ch2)); break;
       case 'Hulk Edge': pixels2.data.set(js_hulk(pixels2.data, cw2)); break;
       case 'Ghost': pixels2.data.set(js_ghost(pixels2.data, cw2)); break;
+      case 'Swamp': pixels2.data.set(js_twisted(pixels2.data, cw2)); break;
       case 'Twisted': pixels2.data.set(js_twisted(pixels2.data, cw2)); break;
       case 'Security': pixels2.data.set(js_security(pixels2.data, cw2)); break;
+      case 'Robbery': pixels2.data.set(js_security(pixels2.data, cw2)); break;
     }
   }
 }
