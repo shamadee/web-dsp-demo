@@ -1,13 +1,16 @@
 let wam;
+let media = 'video';
 let jsActive = true;
 let jsCanvas = true;
 let playing = true;
 let filter = 'Normal', prevFilter;
+let frameNum;
+let slowSpeed = 0.5, fastSpeed = 2;
 let t0, t1 = Infinity, t2, t3 = Infinity, line1, line2, perf1, perf2, perfStr1, perfStr2, avg1, avg2, wasmStats, jsStats, percent=0;
 let counter=0, sum1=0, sum2=0;
 let pixels, pixels2;
 let cw, cw2, ch, ch2;
-let speedDiv = document.getElementsByTagName('h2')[0];
+let speedDiv = document.getElementById('speedHead');
 let avgDisplay = document.getElementById('avg');
 loadWASM()
   .then(module => {
@@ -19,6 +22,7 @@ loadWASM()
       createStats();
       addButtons();
       graphStats();
+      appendWasmCheck();
     })();
 });
 
@@ -41,6 +45,27 @@ function disableJsCanvas() {
     document.getElementById('c2').style.visibility = "hidden";
   }
 }
+function webcamToggle() {
+  media = media === 'video' ? 'webcam' : 'video';
+  if(media==='webcam') {
+    document.getElementById('webcamButton').innerHTML = 'Switch to Video';
+    navigator.mediaDevices.getUserMedia({video: true})
+        .then((stream) => {
+            vid.srcObject = stream;
+            vid2.srcObject = stream;
+        })
+        .catch(function(err) {
+            media = 'video';
+            console.log(err.name);
+        });
+  }
+  else {
+    document.getElementById('webcamButton').innerHTML = 'Switch to Webcam';
+    vid.srcObject = null;
+    vid2.srcObject = null;
+  }
+  
+}
 //wasm video
 var vid = document.getElementById('v');
 var canvas = document.getElementById('c');
@@ -51,6 +76,7 @@ vid.addEventListener("loadeddata", function() {
   cw = canvas.clientWidth; //usually same as canvas.height
   ch = canvas.clientHeight;
   draw();
+  timeData();
 });
 
 //javascript video
@@ -77,42 +103,8 @@ function draw() {
     t1 = performance.now();
   }
   context.putImageData(pixels, 0, 0);
-  testFrame = requestAnimationFrame(draw); 
+  frameNum = requestAnimationFrame(draw); 
 }
-//case for when loop is off and video pauses at end without someone clicking play button
-vid.onpause = () => document.getElementById('playButton').innerHTML = 'Play';
-
-function playToggle () { //does both vids together
-  if (vid.paused) {
-    document.getElementById('playButton').innerHTML = 'Pause';
-    vid.play();
-    vid2.play()
-    draw();
-    draw2();
-  }
-  else {
-    document.getElementById('playButton').innerHTML = 'Play';
-    vid.pause()
-    vid2.pause()
-  }
-}
-function loopToggle () { //does both vids together
-  if (vid.hasAttribute('loop')){
-    document.getElementById('loopButton').innerHTML = 'Loop is Off';
-    vid.removeAttribute('loop')
-    vid2.removeAttribute('loop')
-  }
-  else {
-    if (vid.paused) {
-      playToggle();
-    }
-    document.getElementById('loopButton').innerHTML = 'Loop is On';
-    vid.setAttribute('loop', 'true')
-    vid2.setAttribute('loop', 'true')
-  }
-
-}
-
 //for javascript example
 function draw2() {
   if (vid2.paused) return false;
@@ -126,6 +118,108 @@ function draw2() {
   context2.putImageData(pixels2, 0, 0);
   requestAnimationFrame(draw2);  
 }
+
+//case for when loop is off and video pauses at end without someone clicking play button
+vid.onpause = () => document.getElementById('playImg').setAttribute('src', 'img/play.svg');
+
+function playToggle () { //does both vids together
+  if (vid.paused) {
+    document.getElementById('playImg').setAttribute('src', 'img/pause.svg')
+    vid.play();
+    vid2.play()
+    draw();
+    draw2();
+  }
+  else {
+    document.getElementById('playImg').setAttribute('src', 'img/play.svg')
+    vid.pause()
+    vid2.pause()
+  }
+}
+function rewind() {
+  vid.currentTime = vid.currentTime - 5 > 0 ? vid.currentTime - 5 : 0;
+  vid2.currentTime = vid2.currentTime - 5 > 0 ? vid2.currentTime - 5 : 0;
+
+}
+function fastForward() {
+  vid.currentTime = vid.currentTime + 5 > vid.duration ? vid.duration : vid.currentTime + 5;
+  vid2.currentTime = vid2.currentTime + 5 > vid2.duration ? vid2.duration : vid2.currentTime + 5;
+
+}
+function loopToggle () { //does both vids together
+  if (vid.hasAttribute('loop')){
+    document.getElementById('loopImg').setAttribute('src', 'img/loop.svg')
+    vid.removeAttribute('loop')
+    vid2.removeAttribute('loop')
+  }
+  else {
+    if (vid.paused) {
+      playToggle();
+    }
+    document.getElementById('loopImg').setAttribute('src', 'img/noloop.svg')
+    vid.setAttribute('loop', 'true')
+    vid2.setAttribute('loop', 'true')
+  }
+
+}
+function timeData () {
+  //FrameNum in Time div, and then time in Canvas div;
+  //Can put total frames next to video length; 
+  let vidTime = document.getElementById('vidTime');
+  function getTimeCode(microseconds) {
+    let hours = Math.floor(microseconds / 3600);
+    if (hours < 10) hours = '0' + hours;
+    let minutes = Math.floor(microseconds/ 60);
+    if (minutes < 10) minutes = '0' + minutes;
+    let seconds = Math.floor(microseconds);
+    if (seconds < 10) seconds = '0' + seconds;
+    let milliseconds = microseconds - seconds;
+    milliseconds = String(milliseconds).slice(2,4);
+    return result = `${String(hours)}:${String(minutes)}:${String(seconds)}:${String(milliseconds)}`;
+  }
+  //add thing for frameNum;  
+  vidTime.innerHTML = `${getTimeCode(vid.currentTime)}`;
+  setTimeout(timeData,15);
+}
+
+function slowToggle () {
+  if (vid.playbackRate === slowSpeed) {
+    document.getElementById('slowButton').innerHTML = 'Toggle Slow Motion';
+    vid.playbackRate = 1;
+    vid2.playbackRate = 1;
+  }
+  else if (vid.playbackRate === 1.0) {
+    document.getElementById('slowButton').innerHTML = 'Toggle Regular Speed';
+    vid.playbackRate = slowSpeed;
+    vid2.playbackRate = slowSpeed;
+  }
+  else if (vid.playbackRate === fastSpeed) {
+    document.getElementById('slowButton').innerHTML = 'Toggle Regular Speed';
+    document.getElementById('fastButton').innerHTML = 'Toggle Fast Motion';
+    vid.playbackRate = slowSpeed;
+    vid2.playbackRate = slowSpeed;
+  }
+}
+function fastToggle () {
+  if (vid.playbackRate === fastSpeed) {
+    document.getElementById('fastButton').innerHTML = 'Toggle Fast Motion';
+    vid.playbackRate = 1;
+    vid2.playbackRate = 1;
+  }
+  else if (vid.playbackRate === 1.0) {
+    document.getElementById('fastButton').innerHTML = 'Toggle Regular Speed';
+    vid.playbackRate = fastSpeed;
+    vid2.playbackRate = fastSpeed;
+  }
+  else if (vid.playbackRate === slowSpeed) {
+    document.getElementById('fastButton').innerHTML = 'Toggle Regular Speed';
+    document.getElementById('slowButton').innerHTML = 'Toggle Slow Motion';
+    vid.playbackRate = fastSpeed;
+    vid2.playbackRate = fastSpeed;
+  }
+}
+
+
 
 
 //STATS, Buttons adding, SetPixels function stuff starts below
@@ -162,9 +256,9 @@ function graphStats () {
     percent = Math.round(((perf2 - perf1) / perf1) * 100);
   }
   if (filter !== 'Normal' && jsActive) {
-    speedDiv.innerText = `Speed Stats: WASM is currently ${percent}% faster than JS`;
+    speedDiv.innerText = `Performance Comparison: WASM is currently ${percent}% faster than JS`;
   }
-  else speedDiv.innerText = 'Speed Stats';
+  else speedDiv.innerText = 'Performance Comparison';
 
   prevFilter = filter;
   setTimeout(graphStats, 500);
@@ -210,22 +304,40 @@ function createStats() {
 }
 
 function addButtons (filtersArr) {
-  let filters = ['Normal', 'Grayscale', 'Brighten', 'Invert', 'Noise', 'Sunset', 
+  const filters = ['Normal', 'Grayscale', 'Brighten', 'Invert', 'Noise', 'Sunset', 
                  'Analog TV', 'Emboss', 'Super Edge', 'Super Edge Inv',
-                 'Gaussian Blur', 'Sharpen', 'Uber Sharpen', 'Clarity', 'Good Morning', 'Acid', 'Urple', 'Forest', 'Romance', 'Hippo', 'Longhorn', 'Underground', 'Rooster', 'Mist', 'Tingle', 'Bacteria', 'Dewdrops', 'Color Destruction', 'Hulk Edge', 'Ghost', 'Twisted', 'Security'];
-  let buttonDiv = document.createElement('div');
-  buttonDiv.id = 'buttons';
-  document.body.appendChild(buttonDiv);
+                 'Gaussian Blur', 'Sharpen', 'Uber Sharpen', 'Clarity', 'Good Morning', 'Acid', 'Urple', 'Forest', 'Romance', 'Hippo', 'Longhorn', 'Underground', 'Rooster', 'Moss', 'Mist', 'Tingle', 'Kaleidoscope', 'Bacteria', 'Dewdrops', 'Color Destruction', 'Hulk Edge', 'Ghost', 'Swamp', 'Twisted', 'Security', 'Robbery'];
+  const buttonDiv = document.createElement('div');
+  buttonDiv.id = 'filters';
+  const editor = document.getElementById('editor')
+  editor.insertBefore(buttonDiv, editor.firstChild);
   for (let i = 0; i < filters.length; i++) {
-    let button = document.createElement('button');
-    button.innerText = filters[i];
-    button.addEventListener('click', function() {
+    let filterDiv = document.createElement('div');
+    filterDiv.className = "indFilter";
+    filterDiv.innerText = filters[i];
+    filterDiv.addEventListener('click', function() {
       filter = filters[i];
-      this.classList.add('selected');
+      //remove any that have it;
+      if(document.getElementsByClassName('selectedFilter')[0]) document.getElementsByClassName('selectedFilter')[0].classList.remove('selectedFilter');
+      this.classList.add('selectedFilter');
     });
-    buttonDiv.appendChild(button);
+    buttonDiv.appendChild(filterDiv);
   }
 }
+
+function appendWasmCheck () {
+  let p = document.createElement('p');
+  p.className = 'wasmCheck';
+  let before = document.getElementById('editor');
+  if ('WebAssembly' in window) {
+    p.innerHTML = '(\u2713 \u2713 WebAssembly is supported in your browser)';
+  }
+  else {
+    p.innerHTML = '(\u2639 \u2639 Please upgrade your browser to support WebAssembly)';
+  }
+  document.body.insertBefore(p,before);
+}
+
 
 function setPixels (filter, language) {
   if (language === 'wasm') {
@@ -253,15 +365,19 @@ function setPixels (filter, language) {
       case 'Longhorn': pixels.data.set(wam.longhorn(pixels.data, cw)); break;
       case 'Underground': pixels.data.set(wam.underground(pixels.data, cw)); break;
       case 'Rooster': pixels.data.set(wam.rooster(pixels.data, cw)); break;
+      case 'Moss': pixels.data.set(wam.moss(pixels.data, cw)); break;
       case 'Mist': pixels.data.set(wam.mist(pixels.data, cw)); break;
       case 'Tingle': pixels.data.set(wam.tingle(pixels.data, cw)); break;
+      case 'Kaleidoscope': pixels.data.set(wam.kaleidoscope(pixels.data, cw)); break;
       case 'Bacteria': pixels.data.set(wam.bacteria(pixels.data, cw)); break;
       case 'Dewdrops': pixels.data.set(wam.dewdrops(pixels.data, cw, ch)); break;
       case 'Color Destruction': pixels.data.set(wam.destruction(pixels.data, cw, ch)); break;
       case 'Hulk Edge': pixels.data.set(wam.hulk(pixels.data, cw)); break;
       case 'Ghost': pixels.data.set(wam.ghost(pixels.data, cw)); break;
+      case 'Swamp': pixels.data.set(wam.swamp(pixels.data, cw)); break;
       case 'Twisted': pixels.data.set(wam.twisted(pixels.data, cw)); break;
       case 'Security': pixels.data.set(wam.security(pixels.data, cw)); break;
+      case 'Robbery': pixels.data.set(wam.robbery(pixels.data, cw)); break;
     }
   } else if (jsActive) {
     switch (filter) {
@@ -288,14 +404,18 @@ function setPixels (filter, language) {
       case 'Underground': pixels2.data.set(js_underground(pixels2.data, cw2)); break;
       case 'Rooster': pixels2.data.set(js_rooster(pixels2.data, cw2)); break;
       case 'Mist': pixels2.data.set(js_mist(pixels2.data, cw2)); break;
+      case 'Moss': pixels2.data.set(js_mist(pixels2.data, cw2)); break;
       case 'Tingle': pixels2.data.set(js_tingle(pixels2.data, cw2)); break;
+      case 'Kaleidoscope': pixels2.data.set(js_tingle(pixels2.data, cw2)); break;
       case 'Bacteria': pixels2.data.set(js_bacteria(pixels2.data, cw2)); break;
       case 'Dewdrops': pixels2.data.set(js_dewdrops(pixels2.data, cw2, ch2)); break;
       case 'Color Destruction': pixels2.data.set(js_destruction(pixels2.data, cw2, ch2)); break;
       case 'Hulk Edge': pixels2.data.set(js_hulk(pixels2.data, cw2)); break;
       case 'Ghost': pixels2.data.set(js_ghost(pixels2.data, cw2)); break;
+      case 'Swamp': pixels2.data.set(js_twisted(pixels2.data, cw2)); break;
       case 'Twisted': pixels2.data.set(js_twisted(pixels2.data, cw2)); break;
       case 'Security': pixels2.data.set(js_security(pixels2.data, cw2)); break;
+      case 'Robbery': pixels2.data.set(js_security(pixels2.data, cw2)); break;
     }
   }
 }

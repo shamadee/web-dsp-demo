@@ -5,12 +5,39 @@
   <title>WASM Example</title>
 </head>
 <body>
-  <h1>Video Editor</h1>
-  <div id='wasm-container'>
-    <canvas id="c" width="640" height="360"></canvas>
-    <video id="v" loop="false" autoplay style="display:none;"> -->
-      <source src="media/vid.mp4" type="video/mp4"/> 
-    </video>
+  <header><h1>WebAssembly Video Editor<h1></header>
+  <button id = "webcamButton" onclick="webcamToggle()">Switch to Webcam</button>
+  <div id = 'editor'>
+    <div id = 'middle-col'>
+      <canvas id="c" width="720" height="486"></canvas>
+      <video id="v" loop="false" autoplay style="display:none;" src="media/vid.mp4" type="video/mp4"></video>
+      <div id = "controls">
+        <div>
+          <button id = "playButton" onclick="playToggle()"><img id = "playImg" alt = "Play Button" src = "img/pause.svg"></button>
+          <button id = "rewind" onclick="rewind()"><img id = "rewindImg" alt = "Rewind" src = "img/rewind.svg"></button>
+        </div>
+        <h1 id = "vidTime">00:00:00:00</h1>
+        <div>
+          <button id = "fastForward" onclick="fastForward()"><img id = "fastForwardImg" alt = "Fast Forward" src = "img/forward.svg"></button>
+          <button id = "loopButton" onclick="loopToggle()"><img id = "loopImg" alt = "Loop On Off" src = "img/noloop.svg"></button>
+        </div>
+      </div>
+      <div id = "timing">
+        <button id = "slowButton" onclick ="slowToggle()">Toggle Slow Motion</button>
+        <button id = "fastButton" onclick ="fastToggle()">Toggle Fast Motion</button>
+      </div>
+    </div>
+    <div id = "right-col">
+      <div id = "statsContainer">
+        <h2 id = "speedHead">Performance Comparison</h2>
+        <p id="avg"></p>
+        <div id = "stats">Loading..</div>
+        <h3>Frame Rate. WASM = Green; JS = Blue;</h3>
+        <canvas id = "statsCanvas" width = "400" height = "200"></canvas>
+        <button id="jsButton" onclick="disableJS()">Disable Javascript</button>
+        <button id = "jsCanvas" onclick="disableJsCanvas()">Hide JS Canvas</button>
+      </div>
+    </div>
   </div>
   <div id='js-container'>
     <h1 id = "jsCanvasHeading">JS Example</h1>
@@ -18,19 +45,6 @@
     <video id="v2" loop autoplay style="display:none;"> 
       <source src="media/vid.mp4" type="video/mp4"/> 
     </video>
-  </div>
-  <div id = "statsContainer">
-    <h2>Speed Stats</h2>
-    <p id="avg"></p>
-    <div id = "stats">Loading..</div>
-    <h3>Frame Rate. WASM = Green; JS = Blue;</h3>
-    <canvas id = "statsCanvas"></canvas>
-    <button id="jsButton" onclick="disableJS()">Disable Javascript</button>
-    <button id = "jsCanvas" onclick="disableJsCanvas()">Hide JS Canvas</button>
-    <button id = "playButton" onclick="playToggle()">Pause</button>
-    <button id = "loopButton" onclick="loopToggle()">Loop is On</button>
-
-
   </div>
   </br>
   <script src="smoothie.js" type="text/javascript"></script>

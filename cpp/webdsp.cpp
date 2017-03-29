@@ -55,6 +55,14 @@ extern "C" {
       }
     }
   }
+  void multiFilterFloat (float* data, int len, int width, int filterType, int mag, int mult, int adj) {
+    for (int i = 0; i < len; i += filterType) {
+      if (i % 4 != 3) {
+        data[i] = mag + mult * data[i] - data[i + adj] - data[i + width * 4];
+      }
+    }
+  }
+
   void sobelFilter (unsigned char* data, int width, int height, bool invert) {
     int grayData[width * height];
     for (int y = 0; y < height; y++) {
