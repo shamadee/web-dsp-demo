@@ -80,7 +80,7 @@ function draw() {
     t1 = performance.now();
   }
   context.putImageData(pixels, 0, 0);
-  testFrame = requestAnimationFrame(draw); 
+  requestAnimationFrame(draw); 
 }
 //case for when loop is off and video pauses at end without someone clicking play button
 vid.onpause = () => document.getElementById('playButton').innerHTML = 'Play';
