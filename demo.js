@@ -1,4 +1,5 @@
 let wam;
+let media = 'video';
 let jsActive = true;
 let jsCanvas = true;
 let playing = true;
@@ -43,6 +44,27 @@ function disableJsCanvas() {
     document.getElementById('jsCanvasHeading').style.visibility = "hidden";
     document.getElementById('c2').style.visibility = "hidden";
   }
+}
+function webcamToggle() {
+  media = media === 'video' ? 'webcam' : 'video';
+  if(media==='webcam') {
+    document.getElementById('webcamButton').innerHTML = 'Switch to Video';
+    navigator.mediaDevices.getUserMedia({video: true})
+        .then((stream) => {
+            vid.srcObject = stream;
+            vid2.srcObject = stream;
+        })
+        .catch(function(err) {
+            media = 'video';
+            console.log(err.name);
+        });
+  }
+  else {
+    document.getElementById('webcamButton').innerHTML = 'Switch to Webcam';
+    vid.srcObject = null;
+    vid2.srcObject = null;
+  }
+  
 }
 //wasm video
 var vid = document.getElementById('v');
@@ -315,6 +337,7 @@ function appendWasmCheck () {
   }
   document.body.insertBefore(p,before);
 }
+
 
 function setPixels (filter, language) {
   if (language === 'wasm') {
