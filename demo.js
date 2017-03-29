@@ -9,7 +9,7 @@ let t0, t1 = Infinity, t2, t3 = Infinity, line1, line2, perf1, perf2, perfStr1, 
 let counter=0, sum1=0, sum2=0;
 let pixels, pixels2;
 let cw, cw2, ch, ch2;
-let speedDiv = document.getElementsByTagName('h2')[0];
+let speedDiv = document.getElementById('speedHead');
 let avgDisplay = document.getElementById('avg');
 loadWASM()
   .then(module => {
@@ -83,26 +83,40 @@ function draw() {
   context.putImageData(pixels, 0, 0);
   frameNum = requestAnimationFrame(draw); 
 }
+//for javascript example
+function draw2() {
+  if (vid2.paused) return false;
+  context2.drawImage(vid2, 0, 0);
+  pixels2 = context2.getImageData(0, 0, vid2.videoWidth, vid2.videoHeight);
+  if (filter !== 'Normal') {
+    t2 = performance.now();
+    setPixels(filter, 'js');
+    t3 = performance.now();
+  }
+  context2.putImageData(pixels2, 0, 0);
+  requestAnimationFrame(draw2);  
+}
+
 //case for when loop is off and video pauses at end without someone clicking play button
-vid.onpause = () => document.getElementById('playButton').innerHTML = 'Play';
+vid.onpause = () => document.getElementById('playImg').setAttribute('src', 'img/play.svg');
 
 function playToggle () { //does both vids together
   if (vid.paused) {
-    document.getElementById('playButton').innerHTML = 'Pause';
+    document.getElementById('playImg').setAttribute('src', 'img/pause.svg')
     vid.play();
     vid2.play()
     draw();
     draw2();
   }
   else {
-    document.getElementById('playButton').innerHTML = 'Play';
+    document.getElementById('playImg').setAttribute('src', 'img/play.svg')
     vid.pause()
     vid2.pause()
   }
 }
 function loopToggle () { //does both vids together
   if (vid.hasAttribute('loop')){
-    document.getElementById('loopButton').innerHTML = 'Loop is Off';
+    document.getElementById('loopImg').setAttribute('src', 'img/loop.svg')
     vid.removeAttribute('loop')
     vid2.removeAttribute('loop')
   }
@@ -110,7 +124,7 @@ function loopToggle () { //does both vids together
     if (vid.paused) {
       playToggle();
     }
-    document.getElementById('loopButton').innerHTML = 'Loop is On';
+    document.getElementById('loopImg').setAttribute('src', 'img/noloop.svg')
     vid.setAttribute('loop', 'true')
     vid2.setAttribute('loop', 'true')
   }
@@ -119,9 +133,21 @@ function loopToggle () { //does both vids together
 function timeData () {
   //FrameNum in Time div, and then time in Canvas div;
   //Can put total frames next to video length; 
-  //let timeDiv = document.getElementById('timeData');
+  let vidTime = document.getElementById('vidTime');
+  function getTimeCode(microseconds) {
+    let hours = Math.floor(microseconds / 3600);
+    if (hours < 10) hours = '0' + hours;
+    let minutes = Math.floor(microseconds/ 60);
+    if (minutes < 10) minutes = '0' + minutes;
+    let seconds = Math.floor(microseconds);
+    if (seconds < 10) seconds = '0' + seconds;
+    let milliseconds = microseconds - seconds;
+    milliseconds = String(milliseconds).slice(2,4);
+    return result = `${String(hours)}:${String(minutes)}:${String(seconds)}:${String(milliseconds)}`;
+  }
   //add thing for frameNum;  
-  //timeDiv.innerHTML = `${Math.round(vid.currentTime * 10000)/10000}`;
+  //console.log(vid.currentTime);
+  vidTime.innerHTML = `${getTimeCode(vid.currentTime)}`;
   setTimeout(timeData,15);
 }
 
@@ -163,19 +189,6 @@ function fastToggle () {
 }
 
 
-//for javascript example
-function draw2() {
-  if (vid2.paused) return false;
-  context2.drawImage(vid2, 0, 0);
-  pixels2 = context2.getImageData(0, 0, vid2.videoWidth, vid2.videoHeight);
-  if (filter !== 'Normal') {
-    t2 = performance.now();
-    setPixels(filter, 'js');
-    t3 = performance.now();
-  }
-  context2.putImageData(pixels2, 0, 0);
-  requestAnimationFrame(draw2);  
-}
 
 
 //STATS, Buttons adding, SetPixels function stuff starts below

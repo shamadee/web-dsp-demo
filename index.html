@@ -13,8 +13,9 @@
         <source src="media/vid.mp4" type="video/mp4"/> 
       </video>
       <div id = "controls">
-        <button id = "playButton" onclick="playToggle()">Pause</button>
-        <button id = "loopButton" onclick="loopToggle()">Loop is On</button>
+        <button id = "playButton" onclick="playToggle()"><img id = "playImg" alt = "Play Button" src = "img/pause.svg"></button>
+        <h1 id = "vidTime">00:00:00:00</h1>
+        <button id = "loopButton" onclick="loopToggle()"><img id = "loopImg" alt = "Loop On Off" src = "img/noloop.svg"></button>
       </div>
       <div id = "timing">
         <div id = "timeData"></div>
@@ -25,7 +26,7 @@
     </div>
     <div id = "right-col">
       <div id = "statsContainer">
-        <h2>Performance Comparison</h2>
+        <h2 id = "speedHead">Performance Comparison</h2>
         <p id="avg"></p>
         <div id = "stats">Loading..</div>
         <h3>Frame Rate. WASM = Green; JS = Blue;</h3>
