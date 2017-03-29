@@ -14,7 +14,7 @@
   border: 3px #67594E inset;
 }
 #filters {
-  display: inline-block;
+  display: inline;
   width: 200px;
   height: 480px;
   overflow: scroll;
@@ -26,17 +26,25 @@
   margin-right: 10px;
 }
 #timing {
+  margin-left: 5px;
   padding: 5px;
   border: 1px white solid;
+  width: 200px;
 }
-#stats-canvas {
-  display: inline;
-}
+
 #duration, #slowButton, #fastButton {
   margin-bottom: 10px;
   display: block;
 }
-
+#statsContainer {
+  width: 400px;
+  margin: 5px;
+  border: 1px white solid;
+  padding: 5px;
+}
+#statsCanvas {
+  display: block;
+}
 .indFilter:hover {
   cursor: pointer;
   background-color: #8E3C47;

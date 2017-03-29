@@ -3,6 +3,7 @@ let jsActive = true;
 let jsCanvas = true;
 let playing = true;
 let filter = 'Normal', prevFilter;
+let frameNum;
 let slowSpeed = 0.5, fastSpeed = 2;
 let t0, t1 = Infinity, t2, t3 = Infinity, line1, line2, perf1, perf2, perfStr1, perfStr2, avg1, avg2, wasmStats, jsStats, percent=0;
 let counter=0, sum1=0, sum2=0;
@@ -80,7 +81,7 @@ function draw() {
     t1 = performance.now();
   }
   context.putImageData(pixels, 0, 0);
-  requestAnimationFrame(draw); 
+  frameNum = requestAnimationFrame(draw); 
 }
 //case for when loop is off and video pauses at end without someone clicking play button
 vid.onpause = () => document.getElementById('playButton').innerHTML = 'Play';
@@ -116,9 +117,12 @@ function loopToggle () { //does both vids together
 
 }
 function timeData () {
-  let timeDiv = document.getElementById('timeData');
-  timeDiv.innerHTML = `${Math.round(vid.currentTime * 10000)/10000} \/ `;
-  setInterval(timeData,500);
+  //FrameNum in Time div, and then time in Canvas div;
+  //Can put total frames next to video length; 
+  //let timeDiv = document.getElementById('timeData');
+  //add thing for frameNum;  
+  //timeDiv.innerHTML = `${Math.round(vid.currentTime * 10000)/10000}`;
+  setTimeout(timeData,15);
 }
 
 function slowToggle () {
@@ -208,9 +212,9 @@ function graphStats () {
     percent = Math.round(((perf2 - perf1) / perf1) * 100);
   }
   if (filter !== 'Normal' && jsActive) {
-    speedDiv.innerText = `Speed Stats: WASM is currently ${percent}% faster than JS`;
+    speedDiv.innerText = `Performance Comparison: WASM is currently ${percent}% faster than JS`;
   }
-  else speedDiv.innerText = 'Speed Stats';
+  else speedDiv.innerText = 'Performance Comparison';
 
   prevFilter = filter;
   setTimeout(graphStats, 500);

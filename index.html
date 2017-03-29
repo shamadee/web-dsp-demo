@@ -16,8 +16,6 @@
         <button id = "playButton" onclick="playToggle()">Pause</button>
         <button id = "loopButton" onclick="loopToggle()">Loop is On</button>
       </div>
-    </div>
-    <div id = "right-col">
       <div id = "timing">
         <div id = "timeData"></div>
         <div id = "duration"></div>
@@ -25,15 +23,17 @@
         <button id = "fastButton" onclick ="fastToggle()">Toggle Fast Motion</button>
       </div>
     </div>
-  </div>
-  <div id = "statsContainer">
-    <h2>Speed Stats</h2>
-    <p id="avg"></p>
-    <div id = "stats">Loading..</div>
-    <h3>Frame Rate. WASM = Green; JS = Blue;</h3>
-    <canvas id = "statsCanvas"></canvas>
-    <button id="jsButton" onclick="disableJS()">Disable Javascript</button>
-    <button id = "jsCanvas" onclick="disableJsCanvas()">Hide JS Canvas</button>
+    <div id = "right-col">
+      <div id = "statsContainer">
+        <h2>Performance Comparison</h2>
+        <p id="avg"></p>
+        <div id = "stats">Loading..</div>
+        <h3>Frame Rate. WASM = Green; JS = Blue;</h3>
+        <canvas id = "statsCanvas" width = "400" height = "200"></canvas>
+        <button id="jsButton" onclick="disableJS()">Disable Javascript</button>
+        <button id = "jsCanvas" onclick="disableJsCanvas()">Hide JS Canvas</button>
+      </div>
+    </div>
   </div>
   <div id='js-container'>
     <h1 id = "jsCanvasHeading">JS Example</h1>
