@@ -53,7 +53,6 @@ vid.addEventListener("loadeddata", function() {
   cw = canvas.clientWidth; //usually same as canvas.height
   ch = canvas.clientHeight;
   draw();
-  document.getElementById('duration').innerHTML = `${vid.duration} video length `
   timeData();
 });
 
@@ -113,6 +112,16 @@ function playToggle () { //does both vids together
     vid.pause()
     vid2.pause()
   }
+}
+function rewind() {
+  vid.currentTime = vid.currentTime - 5 > 0 ? vid.currentTime - 5 : 0;
+  vid2.currentTime = vid2.currentTime - 5 > 0 ? vid2.currentTime - 5 : 0;
+
+}
+function fastForward() {
+  vid.currentTime = vid.currentTime + 5 > vid.duration ? vid.duration : vid.currentTime + 5;
+  vid2.currentTime = vid2.currentTime + 5 > vid2.duration ? vid2.duration : vid2.currentTime + 5;
+
 }
 function loopToggle () { //does both vids together
   if (vid.hasAttribute('loop')){

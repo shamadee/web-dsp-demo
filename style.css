@@ -20,27 +20,26 @@
   padding-left: 5px;
   border: 1px white solid;
 }
-#controls {
+#controls, #timing {
   display: flex;
   justify-content: space-between;
   width: 725px;
 }
+#playButton, #rewind, #fastForward, #loopButton {
+  height: 64px;
+}
+
 #vidTime {
-  flex-direction: row;
+  margin-top: -3px;
   font-size: 48px;
 }
-#playButton img {
-  fill: green;
-}
+
 #middle-col {
   margin-left: 10px;
   margin-right: 10px;
 }
 #timing {
-  margin-left: 5px;
-  padding: 5px;
-  border: 1px white solid;
-  width: 200px;
+  
 }
 
 #duration, #slowButton, #fastButton {
@@ -56,6 +55,9 @@
 #statsCanvas {
   display: block;
 }
+.indFilter {
+  width: 100%;
+}
 .indFilter:hover {
   cursor: pointer;
   background-color: #8E3C47;
@@ -63,6 +65,5 @@
 .header {
   display: inline;
 }
-#selected
 
 
