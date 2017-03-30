@@ -23,6 +23,7 @@ header h1, .wasmCheck {
   flex-direction: row;
   border: 3px #67594E inset;
   padding: 20px;
+  width: 100%;
 }
 #c {
   border: 3px #67594E inset;
