@@ -1,6 +1,9 @@
 
 ## A client-side DSP library utilizing the power of WebAssembly (.wasm)
 
+###Note
+Find the demo at http://tiny.cc/webdsp. This is the demo page, to find the library please visit https://github.com/shamadee/web-dsp. 
+
 webDSP is a collection of highly performant algorithms, which are designed to be building blocks for web applications that aim to operate on media data. The methods are written in C++ and compiled to WASM using Emscripten.<br>
 Proper loading of the module across different browsers is ensured by inserting a custom event listener into the WASM module (something that is currently lacking in WebAssembly).<br>
 All available methods have JavaScript fallback functions, which are automatically exported with the module for environments that do not support WebAssembly.
