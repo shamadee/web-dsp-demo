@@ -25,6 +25,21 @@ header {
   border: none;
 }
 
+#git-link {
+  margin-top: 7px;
+  text-align: center;
+}
+#git-link, a {
+  font-size: 24px;
+  color: silver;
+  text-decoration: none;
+}
+
+#git-link, a:hover {
+  color: white;
+  text-decoration: none;
+}
+
 #webcamButton {
   /*font-family: "Cochin", serif;*/
   margin-top: 3px;

@@ -340,7 +340,7 @@ function appendWasmCheck () {
     document.body.insertBefore(p,before);
   }
   else {
-    document.getElementById('statsContainer').innerHTML = '<h2 style="color:#6E8953;">\u2639 \u2639 WebAssembly is not supported in your browser. Please update to the latest version of Chrome or Firefox to enable WebAssembly and compare .WASM & .JS performance</h2>'
+    document.getElementById('statsContainer').innerHTML = '<h3 style="color:#a37c6e;">\u2639 WebAssembly is not supported in your browser. Please update to the latest version of Chrome or Firefox to enable WebAssembly and compare .WASM & .JS performance</h3>'
   }
 }
 
