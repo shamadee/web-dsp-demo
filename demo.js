@@ -126,18 +126,18 @@ function draw2() {
 }
 
 //case for when loop is off and video pauses at end without someone clicking play button
-vid.onpause = () => document.getElementById('playImg').setAttribute('src', 'img/play.svg');
+vid.onpause = () => document.getElementById('playImg').setAttribute('src', 'img/play1.svg');
 
 function playToggle () { //does both vids together
   if (vid.paused) {
-    document.getElementById('playImg').setAttribute('src', 'img/pause.svg')
+    document.getElementById('playImg').setAttribute('src', 'img/pause1.svg')
     vid.play();
     vid2.play()
     draw();
     draw2();
   }
   else {
-    document.getElementById('playImg').setAttribute('src', 'img/play.svg')
+    document.getElementById('playImg').setAttribute('src', 'img/play1.svg')
     vid.pause()
     vid2.pause()
   }
@@ -154,7 +154,7 @@ function fastForward() {
 }
 function loopToggle () { //does both vids together
   if (vid.hasAttribute('loop')){
-    document.getElementById('loopImg').setAttribute('src', 'img/loop.svg')
+    document.getElementById('loopImg').setAttribute('src', 'img/loop1.svg')
     vid.removeAttribute('loop')
     vid2.removeAttribute('loop')
   }
@@ -162,7 +162,7 @@ function loopToggle () { //does both vids together
     if (vid.paused) {
       playToggle();
     }
-    document.getElementById('loopImg').setAttribute('src', 'img/noloop.svg')
+    document.getElementById('loopImg').setAttribute('src', 'img/noloop1.svg')
     vid.setAttribute('loop', 'true')
     vid2.setAttribute('loop', 'true')
   }
