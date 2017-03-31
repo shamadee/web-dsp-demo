@@ -2,31 +2,48 @@
 * {
   font-family: "Montserrat", sans-serif;
   background-color: #232323;
-  color: #EDD9A8;
+  color: grey;
+  /*border: 1px solid #333333;*/
 }
 header h1, .wasmCheck {
   display: inline;
-  font-family: "Cochin", serif;
+  border: none;
 }
-#webcamButton {
-  font-family: "Cochin", serif;
-  margin-top: 3px;
-  font-size: 20px;
-  color: #6E8953;
-  border: 2px solid;
+
+header h1 {
+  font-size: 36px;
+  padding-top: 10px;
 }
+
+header {
+  margin-top: 20px;
+  text-align: center;
+}
+
 .wasmCheck {
-  color: #6E8953;
+  margin-left: 60%;
+  border: none;
 }
+
+#webcamButton {
+  /*font-family: "Cochin", serif;*/
+  margin-top: 3px;
+  margin-left: 20px;
+  font-size: 20px;
+  color: silver;
+  border: 2px solid;
+  border-radius: 2px;
+}
+
 #editor {
   display: flex;
   flex-direction: row;
-  border: 3px #67594E inset;
   padding: 20px;
   width: 100%;
+  border: none;
 }
 #c {
-  border: 3px #67594E inset;
+  border: 2px solid black;
 }
 #filters {
   min-width: 200px;
@@ -35,8 +52,21 @@ header h1, .wasmCheck {
   overflow-y: scroll;
   overflow-x: hidden;
   padding-left: 5px;
-  border: 1px #FFFFC9 solid;
+  border: 2px solid black;
 }
+.indFilter {
+  width: 200px;
+  border: 1px solid #333333;
+}
+.indFilter:hover {
+  cursor: pointer;
+  background-color: darkslategray;
+  color: silver;
+}
+.selectedFilter {
+  background-color: #1d2544;
+}
+
 #controls, #timing {
   display: flex;
   justify-content: space-between;
@@ -48,11 +78,14 @@ header h1, .wasmCheck {
   margin-right: 3px;
   font-size: 20px;
   border: 2px solid;
+  border-radius: 2px;
 }
 #playButton, #rewind, #fastForward, #loopButton {
   margin-top: 3px;
+  border-radius: 3px;
   border: 2px solid;
-  height: 64px;
+  height: 40px;
+  width: 80px;
 }
 #slowButton, #fastButton {
   border: 2px solid;
@@ -61,11 +94,14 @@ header h1, .wasmCheck {
 #vidTime {
   margin-top: 0px;
   font-size: 48px;
+  color: #EFEFEF;
+  border: none;
 }
 
 #middle-col {
   margin-left: 10px;
   margin-right: 10px;
+  border: none;
 }
 #duration, #slowButton, #fastButton {
   margin-bottom: 10px;
@@ -74,24 +110,17 @@ header h1, .wasmCheck {
 #statsContainer {
   width: 400px;
   margin: 5px;
-  border: 1px #FFFFC9 solid;
+  border: 2px solid black;
   padding: 5px;
 }
 #jsButtonDiv {
   text-align: center;
+  border: none;
 }
+
 #statsCanvas {
   display: block;
-}
-.indFilter {
-  width: 200px;
-}
-.indFilter:hover {
-  cursor: pointer;
-  background-color: #8E3C47;
-}
-.selectedFilter {
-  background-color: #8E3C47;
+  border: none;
 }
 .header {
   display: inline;

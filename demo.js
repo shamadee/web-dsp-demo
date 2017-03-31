@@ -181,7 +181,7 @@ function timeData () {
     if (seconds < 10) seconds = '0' + seconds;
     let milliseconds = microseconds - seconds;
     milliseconds = String(milliseconds).slice(2,4);
-    return result = `${String(hours)}:${String(minutes)}:${String(seconds)}:${String(milliseconds)}`;
+    return result = `${String(hours)} : ${String(minutes)} : ${String(seconds)} : ${String(milliseconds)}`;
   }
   //add thing for frameNum;  
   vidTime.innerHTML = `${getTimeCode(vid.currentTime)}`;
@@ -336,7 +336,7 @@ function appendWasmCheck () {
   p.className = 'wasmCheck';
   let before = document.getElementById('editor');
   if ('WebAssembly' in window) {
-    p.innerHTML = '(\u2713 \u2713 WebAssembly is supported in your browser)';
+    p.innerHTML = '(\u2713 WebAssembly is supported in your browser)';
     document.body.insertBefore(p,before);
   }
   else {
