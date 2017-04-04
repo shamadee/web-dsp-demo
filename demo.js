@@ -18,7 +18,7 @@ loadWASM()
 }).catch((err) => {
   console.log('Error in fetching module: ', err);
 }).then(() => {
-    window.onload = (() => { 
+    window.onload = (() => {
       createStats();
       addButtons();
       graphStats();
