@@ -21,7 +21,8 @@ header {
 }
 
 .wasmCheck {
-  margin-left: 60%;
+  float: right;
+  margin-right: 30px;
   border: none;
 }
 
