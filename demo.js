@@ -339,8 +339,11 @@ function appendWasmCheck () {
     p.innerHTML = '(\u2713 WebAssembly is supported in your browser)';
     document.body.insertBefore(p,before);
   }
+  else if (/Mobi/.test(navigator.userAgent)) {
+    document.getElementById('statsContainer').innerHTML = `<h3 style="color:#a37c6e;">\u2639 WebAssembly is not yet supported on mobile devices. Please view on desktop browser.</h3>`
+  }
   else {
-    document.getElementById('statsContainer').innerHTML = '<h3 style="color:#a37c6e;">\u2639 WebAssembly is not supported in your browser. Please update to the latest version of Chrome or Firefox to enable WebAssembly and compare .WASM & .JS performance</h3>'
+    document.getElementById('statsContainer').innerHTML = `<h3 style="color:#a37c6e;">\u2639 WebAssembly is not supported in your browser. Please update to the latest version of Chrome or Firefox to enable WebAssembly and compare .WASM & .JS performance</h3>`
   }
 }
 
