@@ -1,7 +1,7 @@
 let wam;
 let media = 'video';
 let jsActive = true;
-let jsCanvas = true;
+let jsCanvasOn = true;
 let playing = true;
 let filter = 'Normal', prevFilter;
 let frameNum;
@@ -33,8 +33,8 @@ function disableJS() {
 }
 
 function disableJsCanvas() {
-  jsCanvas = !jsCanvas;
-  if (jsCanvas) {
+  jsCanvasOn = !jsCanvasOn;
+  if (jsCanvasOn) {
     document.getElementById('jsCanvas').innerHTML = 'Hide JS Canvas';
     document.getElementById('jsCanvasHeading').style.visibility = "visible";
     document.getElementById('c2').style.visibility = "visible";
